@@ -1,0 +1,32 @@
+function simParams = compareStats()
+
+larvaStats = getLarvaStats();
+
+larvaParams = getStatParams(larvaStats);
+
+for fileNum = 1:10
+
+   disp(['Reading file ' num2str(i)]);
+    
+   dataName = ['data' num2str(fileNum)];
+   turnName = ['turns' num2str(fileNum)];
+    
+   simStats = getSimStats(dataName,turnName,0.1);
+    
+   simParams(fileNum) = getStatParams(simStats);
+
+end
+
+figure; hold on;
+
+plot([1,10],[larvaParams.afterLeftMean larvaParams.afterLeftMean],'--r');
+plot([simParams.afterLeftMean],'-r');
+
+plot([1,10],[larvaParams.afterRightMean larvaParams.afterRightMean],'--b');
+plot([simParams.afterRightMean],'-b');
+
+plot([1,10],[larvaParams.beforeLeftMean larvaParams.beforeLeftMean],'--m');
+plot([simParams.beforeLeftMean],'m');
+
+plot([1,10],[larvaParams.beforeRightMean larvaParams.beforeRightMean]);
+plot([simParams.beforeRightMean],');

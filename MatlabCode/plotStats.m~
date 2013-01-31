@@ -1,0 +1,74 @@
+function plotStats(stats)
+
+
+% Turn cumulative prob
+
+subplot(5,1,1);
+
+turnCumulativeTics = 11.25:22.5:168.75;
+bar(turnCumulativeTics,stats.turnCumulativeProb);
+
+
+%% Left / right pre / post turn bearing
+
+subplot(5,1,2); hold on; axis square;
+rosePlus(count2items(stats.bearingBeforeLeftTurns,2*pi),'r',0.3);
+rosePlus(count2items(stats.bearingAfterLeftTurns,2*pi),'r',0.7);
+
+subplot(5,1,1); hold on; axis square;
+rosePlus(count2items(stats.bearingBeforeRightTurns,2*pi),'b',0.3);
+rosePlus(count2items(stats.bearingAfterRightTurns,2*pi),'b',0.7);
+
+
+
+
+%% Prob left turn
+
+numIntervals = 12;
+interval = (2*pi)/numIntervals;
+probs = zeros(7,1);
+
+for i = 1:numIntervals
+    angle = -pi+interval*(i-1)
+    
+    totalCount = sum((turnStarts(:,6) > angle) & (turnStarts(:,6) < angle+interval));
+    leftCount = sum((turnStarts(:,6) > angle) & (turnStarts(:,6) < angle+interval) & (bearingDiff < 0));
+    
+    probs(i) = leftCount/totalCount;
+    
+end
+
+subplot(1,2,1); hold on; axis([-pi,pi,0,1]); title('Larva data');
+bar(-pi+interval/2:interval:pi-interval/2,leftTurnProb,interval);
+plot([-pi,pi],[0.5,0.5],'--k');
+
+subplot(1,2,2); hold on; axis([-pi,pi,0,1]); title('Sim data');
+bar(-pi+interval/2:interval:pi-interval/2,probs,interval);
+plot([-pi,pi],[0.5,0.5],'--k');
+
+
+
+%% Head turns
+
+subplot(3,2,1); title('Larva data');
+h = pie(oneCastRatios,oneCastLabels);
+
+subplot(3,2,3);
+h = pie(twoCastRatios,twoCastLabels);
+
+subplot(3,2,5);
+h = pie(threeCastRatios,threeCastLabels);
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,15 @@
+% Calculates the circular mean given the angles for
+% a number of bins and the counts which fall into them
+function mean = circularHistMean(angles,counts)
+
+    ySum = 0;
+    xSum = 0;
+    
+    n = length(angles);
+    
+    for i = 1:n
+        ySum = ySum + counts(i)*sin(angles(i));
+        xCount = xCount + counts(i)*cos(angles(i));
+    end
+
+    mean = atan2(

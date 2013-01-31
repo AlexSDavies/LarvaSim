@@ -1,0 +1,12 @@
+function statParams = getStatParams(stats)
+
+
+afterLeftMean = circularHistMean(circleTics,stats.bearingAfterLeftTurns);
+beforeLeftMean = circularHistMean(circleTics,stats.bearingBeforeLeftTurns);
+afterRightMean = circularHistMean(circleTics,stats.bearingAfterRightTurns);
+beforeRightMean = circularHistMean(circleTics,stats.bearingBeforeRightTurns);
+
+beforeHighMean = circularHistMean(circleTics,stats.bearingBeforeTurnsToHigh);
+beforeLowMean = circularHistMean(circleTics,stats.bearingBeforeTurnsToLow);
+
+
