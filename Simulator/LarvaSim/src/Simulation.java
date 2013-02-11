@@ -17,13 +17,15 @@ public class Simulation {
 	private List <Drawable> drawObjects;
 	private List <Updateable> updateObjects;
 
+	private Parameters parameters;
+	
 	private Larva larva;
 	
 	private List <LarvaData> larvaData;
 	
 	private SimWindow simWindow;
 	private GraphWindow graphWindow;
-		
+	
 	private ITrace2D trace1_1, trace1_2, trace2;
 	private OdourSource odour;
 	
@@ -31,9 +33,11 @@ public class Simulation {
 	
 	final double timestep = 0.1;
 	
-	public Simulation(Parameters parameters,double runTime,String uniqueName)
+	public Simulation(Parameters parameters, double runTime,String uniqueName)
 	{
 	
+		this.parameters = parameters;
+		
 		initObjects(parameters);
 		
 		initWindows();
@@ -99,7 +103,7 @@ public class Simulation {
 		
 		// -------------- Process data -----------------
 		
-		DataProcessing.doAll(larvaData,uniqueName);
+		DataProcessing.doAll(larvaData,parameters,uniqueName);
 		
 		simWindow.dispose();
 		graphWindow.dispose();

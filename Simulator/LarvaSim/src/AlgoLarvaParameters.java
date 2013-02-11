@@ -14,4 +14,6 @@ public class AlgoLarvaParameters extends Parameters {
 		castSpeed,
 		castAngle;
 		
+
+	
 }

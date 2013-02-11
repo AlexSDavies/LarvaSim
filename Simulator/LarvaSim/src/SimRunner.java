@@ -5,6 +5,7 @@ public class SimRunner {
 		
 		AlgoLarvaParameters parameters = new AlgoLarvaParameters();
 		
+		// Set default parameters 
 		parameters.castAngle = Math.PI/2;
 		parameters.castSpeed = 1;
 		
@@ -19,17 +20,18 @@ public class SimRunner {
 		parameters.turnProbMult = 450;
 		
 		parameters.castProbBase = 0.1;
-		parameters.castProbMult = 100;
+		parameters.castProbMult = 50;
+		
+		
 		
 		double runTime = 6000;
 		
-		for(int i = 1; i <= 10; i++){
 		
-			double a = i*0.3/10;
+		for(int i = 1; i <= 6; i++){
+		
+			parameters.castAngle = i*Math.PI/6;
 			
-			parameters.castKernalEndVal = a;
-			
-			String uniqueName = Integer.toString(i);
+			String uniqueName = "castAngle_lowCastMult_" + Integer.toString(i);
 			
 			new Simulation(parameters,runTime,uniqueName);
 		

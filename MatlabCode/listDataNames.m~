@@ -1,0 +1,9 @@
+function listDataNames()
+
+files = dir('../Data');
+fileNames = {files.name};
+
+
+dataFiles = fileNames(strncmpi('data',fileNames,4));
+
+

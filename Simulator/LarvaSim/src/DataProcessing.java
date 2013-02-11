@@ -1,9 +1,7 @@
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -11,22 +9,26 @@ public class DataProcessing {
 
 	
 	// Runs through all data processing and saves data
-	public static void doAll(List<LarvaData> larvaData, String uniqueName) {
+	public static void doAll(List<LarvaData> larvaData, Parameters parameters, String uniqueName) {
 		
 		String path = "/afs/inf.ed.ac.uk/user/s07/s0784670/LarvaSim/Data/";
 		
 		// Save all data
-		DataProcessing.saveData(larvaData,path+"data"+uniqueName);
+		saveData(larvaData,path+"data_"+uniqueName);
 		
 		// Get list of turn start / end indices
 		List<int[]> turnPoints = DataProcessing.getTurnPoints(larvaData);
 		
 		// Save turn indices
-		saveTurnTimes(turnPoints,path+"turns"+uniqueName);
+		saveTurnTimes(turnPoints,path+"turns_"+uniqueName);
+		
+		// Save Parameters
+		saveParameters(parameters,path+"parameters_"+uniqueName);
 		
 	}
 	
 	
+
 	// Returns the LarvaData objects at the start times of all turns in a list of LarvaData
 	public static List<int[]> getTurnPoints(List<LarvaData> larvaData) {
 		
@@ -112,6 +114,26 @@ public class DataProcessing {
 				out.write(output + "\n");
 			}
 			
+			
+			out.close();
+			
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	// Writes out parameters to file
+	private static void saveParameters(Parameters parameters, String name)
+	{
+		
+		try
+		{
+			FileWriter fstream = new FileWriter(name);
+			BufferedWriter out =  new BufferedWriter(fstream);
+			
+			out.write(parameters.getParamString());			
 			
 			out.close();
 			

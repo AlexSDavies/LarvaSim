@@ -1,0 +1,15 @@
+% Reads parameters from a file
+% (Assuming parameters stored as 'name val' on each line)
+function parameters = readParameters(fileName)
+
+fileID = open(fileName);
+fileContents = textscan(fileID,'%s %f');
+close(fileID);
+
+names = fileContents{1};
+vals = fileContents{2};
+
+% Add all parameters to s
+for i = 1:length(names); 
+    parameters.(names{i}) = vals(i);
+end

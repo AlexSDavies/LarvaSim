@@ -4,20 +4,25 @@ function simData = getSimStats(dataFile,turnsFile,timestep)
 %% Read data
 
 rawData = dlmread(['../Data/' dataFile], ' ',1,0);
-data = simDataToStruct(rawData);
 
-data.beain
+
+
+data = simDataToStruct(rawData);
 
 turnIndeces = dlmread(['../Data/' turnsFile],' ',0,0);
 turnStartIndeces = turnIndeces(:,1);
 turnEndIndeces = turnIndeces(:,2);
-turnCount = length(turnIndeces);
+simData.numTurns = length(turnIndeces);
 
 turnStartData = simDataToStruct(rawData(turnStartIndeces,:));
 turnEndData = simDataToStruct(rawData(turnEndIndeces,:));
 
-simData.rawData = rawData;
+%% BEARINGS NOW IN RANGE 0 - 2*PI
+data.bearing(data.bearing < 0) = data.bearing(data.bearing < 0) + 2*pi;
+turnStartData.bearing(turnStartData.bearing < 0) = turnStartData.bearing(turnStartData.bearing < 0) + 2*pi;
+turnEndData.bearing(turnEndData.bearing < 0) = turnEndData.bearing(turnEndData.bearing < 0) + 2*pi;
 
+simData.rawData = rawData;
 
 %% Get turn info
 
@@ -32,18 +37,36 @@ bearingDiff(bearingDiff < -pi) = 2*pi + bearingDiff(bearingDiff < -pi);
 % -1 if left, 1 if right
 turnLeftRight = sign(bearingDiff);
 
+
+
 % List of head casts preceding the turn
-% for i = 1:turnCount
-%     
-%     % Get interval we're looking for head casts over
-%     endIndex = turnIndeces(i);
-%     startIndex = endIndex - 5/timestep;
-% 
-%     preTurnHeadAngles = data.headAngle(startIndex:endIndex);
-%     
-%     headCasts(i) = {getCrossings(preTurnHeadAngles,0.5236)};
-%     
-% end
+% 1 for cast to higher odour
+% -1 for cast to lower odour
+for i = 1:simData.numTurns
+    
+    % Get interval we're looking for head casts over
+    endIndex = turnIndeces(i);
+    startIndex = endIndex - 5/timestep;
+    startIndex = max(startIndex,1);
+
+    preTurnHeadAngles = data.headAngle(startIndex:endIndex);
+    preTurnPerception = data.perception(startIndex:endIndex);
+     
+    headCastIndeces = getCrossings(preTurnHeadAngles,0.5236);
+    
+    headCastVals = preTurnPerception(headCastIndeces == 1);
+    
+    % Get perception at zero head angle position, to compare to head cast
+    % values
+    [~, zeroValPos] = min(preTurnHeadAngles);
+    zeroVal = preTurnPerception(zeroValPos);
+    
+    headCastVals(headCastVals < zeroVal) = -1;
+    headCastVals(headCastVals >= zeroVal) = 1;
+
+    headCasts{i} = headCastVals;
+    
+end
 
 
 %% Bearing / turn probability
@@ -57,7 +80,7 @@ simData.turnCumulativeProb = cumsum(numpoints)/sum(numpoints);
 
 %% Left / right pre / post turn bearing
 
-circleTics = [0:11.25:348.75] - 180;
+circleTics = 0:11.25:348.75;
 
 leftTurnIndeces = find(turnLeftRight == -1);
 rightTurnIndeces = find(turnLeftRight == 1);
@@ -88,29 +111,66 @@ simData.bearingBeforeTurnsToHigh = hist(rad2deg(turnStartData.bearing(turnHighIn
 
 %% Prob left turn
 
+%% This needs fixed for 0<angle<pi
+
 numIntervals = 12;
 interval = (2*pi)/numIntervals;
-probs = zeros(7,1);
+probs = zeros(1,12);
 
 for i = 1:numIntervals
-    angle = -pi+interval*(i-1);
+    
+    % Changed from -pi + interval*(i-1)
+    angle = interval*(i-1);
     
     totalCount = sum((turnStartData.bearing > angle) & (turnStartData.bearing < angle+interval));
     leftCount = sum((turnStartData.bearing > angle) & (turnStartData.bearing < angle+interval) & (bearingDiff < 0));
-    
-    probs(i) = leftCount/totalCount;
+
+    if (leftCount == 0)
+        probs(i) = 0;
+    else
+        probs(i) = leftCount/totalCount;
+    end
     
 end
+
+% Convert to -pi - pi range to match larva data
+probs = [probs(7:12) probs(1:6)];
 
 simData.leftTurnProb = probs;
 
 
-%% Head turns
+%% Head casts
 
 
 
 
+simData.numCasts = cellfun(@length,headCasts);
+
+% Casts H, L
+oneCastCounts(1) = sum(cellfun(@(x) isequal(x,[1]),headCasts));
+oneCastCounts(2) = sum(cellfun(@(x) isequal(x,[-1]),headCasts));
+
+simData.oneCastRatios = oneCastCounts./sum(oneCastCounts);
+
+% Casts HH, LH, HL, LL
+twoCastCounts(1) = sum(cellfun(@(x) isequal(x,[1 1]'),headCasts));
+twoCastCounts(2) = sum(cellfun(@(x) isequal(x,[-1 1]'),headCasts));
+twoCastCounts(3) = sum(cellfun(@(x) isequal(x,[1 -1]'),headCasts));
+twoCastCounts(4) = sum(cellfun(@(x) isequal(x,[-1 -1]'),headCasts));
+
+simData.twoCastRatios = twoCastCounts./sum(twoCastCounts);
 
 
+% Casts HHH, HLH, LHH, LLH, HHL, HLL, LHL, LLL
+threeCastCounts(1) = sum(cellfun(@(x) isequal(x,[1 1 1]'),headCasts));
+threeCastCounts(2) = sum(cellfun(@(x) isequal(x,[1 -1 1]'),headCasts));
+threeCastCounts(3) = sum(cellfun(@(x) isequal(x,[-1 1 1]'),headCasts));
+threeCastCounts(4) = sum(cellfun(@(x) isequal(x,[-1 -1 1]'),headCasts));
+threeCastCounts(5) = sum(cellfun(@(x) isequal(x,[1 1 -1]'),headCasts));
+threeCastCounts(6) = sum(cellfun(@(x) isequal(x,[1 -1 -1]'),headCasts));
+threeCastCounts(7) = sum(cellfun(@(x) isequal(x,[-1 1 -1]'),headCasts));
+threeCastCounts(8) = sum(cellfun(@(x) isequal(x,[-1 -1 -1]'),headCasts));
+
+simData.threeCastRatios = threeCastCounts./sum(threeCastCounts);
 
 

@@ -1,8 +1,7 @@
 
 function larvaStats = getLarvaStats()
 
-% These stats are all from the Gomez-Marin paper on larval odour-taxis
-% "Active sampling and decision making in Drosophila chemotaxis"
+% These stats are all from the Go
 
 larvaStats.turnCumulativeProb = [0.01 0.03 0.08 0.17 0.33 0.52 0.75 1]';
 
