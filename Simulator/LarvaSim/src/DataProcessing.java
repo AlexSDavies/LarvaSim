@@ -11,7 +11,7 @@ public class DataProcessing {
 	// Runs through all data processing and saves data
 	public static void doAll(List<LarvaData> larvaData, Parameters parameters, String uniqueName) {
 		
-		String path = "/afs/inf.ed.ac.uk/user/s07/s0784670/LarvaSim/Data/";
+		String path = "../../../Data/";
 		
 		// Save all data
 		saveData(larvaData,path+"data_"+uniqueName);
