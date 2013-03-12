@@ -10,13 +10,10 @@ public class Larva implements Drawable, Updateable {
 	private final double headLength = 10;
 	private final double tailLength = 10;
 	
-	private final double castSpeed = 2;
-	
 	private final double forwardSpeed = 10;
 	
-	// TODO: Change this to time rather than steps
-	private final int perceptionHistoryLength = 100;
-
+	private final int perceptionHistoryTime = 10;
+	private int perceptionHistoryLength;
 	
 	
 	// Fields
@@ -48,6 +45,7 @@ public class Larva implements Drawable, Updateable {
 		odour = o;
 		
 		this.timestep = timestep;
+		perceptionHistoryLength = (int) (perceptionHistoryTime/timestep);
 		
 		state = LarvaState.FORWARD;
 		
@@ -68,18 +66,22 @@ public class Larva implements Drawable, Updateable {
 		
 		// Turn stimulus kernel
 		turnStimulusKernal = new double[perceptionHistoryLength];
-		for(int i = 0; i < perceptionHistoryLength; i++)
+		int turnKernalLength = (int) (params.turnKernalDuration/timestep);
+		int turnKernalStartPos = perceptionHistoryLength - turnKernalLength;
+		
+		for(int i = turnKernalStartPos; i < perceptionHistoryLength; i++)
 		{
-			turnStimulusKernal[i] = params.turnKernalStartVal + ((params.turnKernalEndVal - params.turnKernalStartVal)/perceptionHistoryLength)*i;
+			turnStimulusKernal[i] = params.turnKernalStartVal + ((params.turnKernalEndVal - params.turnKernalStartVal)/turnKernalLength)*i;
 		}
 		
 		// Head cast stimulus kernel
 		headCastStimulusKernal= new double[perceptionHistoryLength];
-		int kernalStartPos = (int) (params.castKernalStartPos*perceptionHistoryLength);
-		int kernalLength = perceptionHistoryLength - kernalStartPos;
-		for(int i = kernalStartPos; i < perceptionHistoryLength; i++)
+		
+		int castKernalLength = (int) (params.castKernalDuration/timestep);
+		int castKernalStartPos = perceptionHistoryLength - castKernalLength;
+		for(int i = castKernalStartPos; i < perceptionHistoryLength; i++)
 		{
-			headCastStimulusKernal[i] = params.castKernalStartVal + ((params.castKernalEndVal - params.castKernalStartVal)/kernalLength)*i;
+			headCastStimulusKernal[i] = params.castKernalStartVal + ((params.castKernalEndVal - params.castKernalStartVal)/castKernalLength)*i;
 		}
 		
 		

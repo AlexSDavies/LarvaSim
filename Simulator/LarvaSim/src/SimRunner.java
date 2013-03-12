@@ -11,13 +11,14 @@ public class SimRunner {
 		
 		parameters.turnKernalStartVal = 9;
 		parameters.turnKernalEndVal = -9;
+		parameters.turnKernalDuration = 10;
 		
 		parameters.turnProbBase = 0.2;
 		parameters.turnProbMult = 1;
 		
 		parameters.castKernalStartVal = -50;
 		parameters.castKernalEndVal = 50;
-		parameters.castKernalStartPos = 0.5;
+		parameters.castKernalDuration = 5;
 		
 		parameters.castProbBase = 0.0;
 		parameters.castProbMult = 1;
