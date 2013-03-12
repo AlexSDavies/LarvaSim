@@ -66,14 +66,14 @@ public class Larva implements Drawable, Updateable {
 	private void initialiseKernals()
 	{
 		
-		// Turn stimulus kernal
+		// Turn stimulus kernel
 		turnStimulusKernal = new double[perceptionHistoryLength];
 		for(int i = 0; i < perceptionHistoryLength; i++)
 		{
 			turnStimulusKernal[i] = params.turnKernalStartVal + ((params.turnKernalEndVal - params.turnKernalStartVal)/perceptionHistoryLength)*i;
 		}
 		
-		// Head cast stimulus kernal
+		// Head cast stimulus kernel
 		headCastStimulusKernal= new double[perceptionHistoryLength];
 		int kernalStartPos = (int) (params.castKernalStartPos*perceptionHistoryLength);
 		int kernalLength = perceptionHistoryLength - kernalStartPos;
@@ -111,6 +111,7 @@ public class Larva implements Drawable, Updateable {
 				{state = LarvaState.CAST_RIGHT;}
 			if (Math.random() < getHeadCastStopProbability())
 				{state = LarvaState.FORWARD;}
+			
 			break;
 		
 		case CAST_RIGHT:
@@ -119,6 +120,7 @@ public class Larva implements Drawable, Updateable {
 				{state = LarvaState.CAST_LEFT;}
 			if (Math.random() < getHeadCastStopProbability())
 				{state = LarvaState.FORWARD;}
+			
 			break;
 			
 		}
@@ -137,7 +139,6 @@ public class Larva implements Drawable, Updateable {
 	
 
 	// Returns the probability of initiating a turn based on perception history
-	// TODO: Make this more principled
 	public double getTurnProbability()
 	{
 		
@@ -162,7 +163,6 @@ public class Larva implements Drawable, Updateable {
 	
 	
 	// Returns the probability of stopping head casting
-	// TODO: Make this more principled
 	public double getHeadCastStopProbability() {
 		
 		double[] perception = getPerceptionHistory();

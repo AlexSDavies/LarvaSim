@@ -6,36 +6,36 @@ public class SimRunner {
 		AlgoLarvaParameters parameters = new AlgoLarvaParameters();
 		
 		// Set default parameters 
-		parameters.castAngle = Math.PI/2;
+		parameters.castAngle = 4*Math.PI/5;
 		parameters.castSpeed = 1;
 		
-		parameters.turnKernalStartVal = 0.02;
-		parameters.turnKernalEndVal = -0.02;
+		parameters.turnKernalStartVal = 9;
+		parameters.turnKernalEndVal = -9;
 		
-		parameters.castKernalStartVal = 0;
-		parameters.castKernalEndVal = 0.1;
-		parameters.castKernalStartPos = 0.75;
+		parameters.turnProbBase = 0.2;
+		parameters.turnProbMult = 1;
 		
-		parameters.turnProbBase = 0.1;
-		parameters.turnProbMult = 450;
+		parameters.castKernalStartVal = -50;
+		parameters.castKernalEndVal = 50;
+		parameters.castKernalStartPos = 0.5;
 		
-		parameters.castProbBase = 0.1;
-		parameters.castProbMult = 50;
-		
+		parameters.castProbBase = 0.0;
+		parameters.castProbMult = 1;
 		
 		
 		double runTime = 6000;
 		
+		new Simulation(parameters, runTime, "test");
 		
-		for(int i = 1; i <= 6; i++){
-		
-			parameters.castAngle = i*Math.PI/6;
-			
-			String uniqueName = "castAngle_lowCastMult_" + Integer.toString(i);
-			
-			new Simulation(parameters,runTime,uniqueName);
-		
-		}
+//		for(int i = 1; i <= 10; i++){
+//		
+//			parameters.castAngle = i*Math.PI/10;
+//			
+//			String uniqueName = "castAngle_" + Integer.toString(i);
+//			
+//			new Simulation(parameters,runTime,uniqueName);
+//		
+//		}
 
 		System.exit(0);
 		

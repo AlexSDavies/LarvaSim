@@ -142,6 +142,7 @@ simData.leftTurnProb = probs;
 %% Head casts
 
 simData.numCasts = cellfun(@length,headCasts);
+castCounts = [];
 
 for i = 1:max(simData.numCasts)
    castCounts(i) = sum(simData.numCasts == i); 
