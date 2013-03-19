@@ -4,6 +4,14 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Random;
 
+/*
+ * This class defines the behaviour of the simulated larva
+ * 
+ * The 'update' function gets called on every step of the simulation,
+ * and is where any behaviour should be encoded
+ * 
+ */
+
 public class Larva implements Drawable, Updateable {
 
 	// Parameters
@@ -30,8 +38,8 @@ public class Larva implements Drawable, Updateable {
 	private int perceptionPointer;
 	private double[] perceptionHistory;
 	
-	public double[] turnStimulusKernal;
-	private double[] headCastStimulusKernal;
+	public double[] turnStimulusKernel;
+	private double[] headCastStimulusKernel;
 
 	
 	private AlgoLarvaParameters params;
@@ -41,9 +49,13 @@ public class Larva implements Drawable, Updateable {
 	// Create larva (must be passed an odour source)
 	public Larva(double timestep, OdourSource o, Parameters parameters)
 	{
-		pos = new LarvaPosition(new Point(50,450), new Point(50,440), new Point(50,430));
+		
+		// Set initial position
+		// TODO: Alter to take position as an input
+		pos = new LarvaPosition(new Point(200,420), new Point(200,410), new Point(200,400));
 		odour = o;
 		
+		// Initialise various things 
 		this.timestep = timestep;
 		perceptionHistoryLength = (int) (perceptionHistoryTime/timestep);
 		
@@ -56,43 +68,14 @@ public class Larva implements Drawable, Updateable {
 		
 		this.params = (AlgoLarvaParameters) parameters;
 		
-		initialiseKernals();
+		initialiseKernels();
 						
 	}
 	
 	
-	private void initialiseKernals()
-	{
-		
-		// Turn stimulus kernel
-		turnStimulusKernal = new double[perceptionHistoryLength];
-		int turnKernalLength = (int) (params.turnKernalDuration/timestep);
-		int turnKernalStartPos = perceptionHistoryLength - turnKernalLength;
-		
-		for(int i = turnKernalStartPos; i < perceptionHistoryLength; i++)
-		{
-			turnStimulusKernal[i] = params.turnKernalStartVal + ((params.turnKernalEndVal - params.turnKernalStartVal)/turnKernalLength)*i;
-		}
-		
-		// Head cast stimulus kernel
-		headCastStimulusKernal= new double[perceptionHistoryLength];
-		
-		int castKernalLength = (int) (params.castKernalDuration/timestep);
-		int castKernalStartPos = perceptionHistoryLength - castKernalLength;
-		for(int i = castKernalStartPos; i < perceptionHistoryLength; i++)
-		{
-			headCastStimulusKernal[i] = params.castKernalStartVal + ((params.castKernalEndVal - params.castKernalStartVal)/castKernalLength)*i;
-		}
-		
-		
-	}
-
-
 	// Update method, called from simulation every step
 	public void update(){
 	
-		// System.out.println(getHeadAngle() + " : " + getTailAngle());
-		
 		// Do movement	
 		switch(state){
 		
@@ -135,11 +118,34 @@ public class Larva implements Drawable, Updateable {
 	}
 
 	
-	// Probabilities are based on a poisson type system:
-	// We calculate a 'rate' which determines the expected time to turning
-	// and then calculate a probability based on this and the timestep
-	
+	private void initialiseKernels()
+	{
+		
+		// Turn stimulus kernel
+		turnStimulusKernel = new double[perceptionHistoryLength];
+		int turnKernelLength = (int) (params.turnKernelDuration/timestep);
+		int turnKernelStartPos = perceptionHistoryLength - turnKernelLength;
+		
+		for(int i = turnKernelStartPos; i < perceptionHistoryLength; i++)
+		{
+			turnStimulusKernel[i] = params.turnKernelStartVal + ((params.turnKernelEndVal - params.turnKernelStartVal)/turnKernelLength)*i;
+		}
+		
+		// Head cast stimulus kernel
+		headCastStimulusKernel= new double[perceptionHistoryLength];
+		
+		int castKernelLength = (int) (params.castKernelDuration/timestep);
+		int castKernelStartPos = perceptionHistoryLength - castKernelLength;
+		
+		for(int i = castKernelStartPos; i < perceptionHistoryLength; i++)
+		{
+			headCastStimulusKernel[i] = params.castKernelStartVal + ((params.castKernelEndVal - params.castKernelStartVal)/castKernelLength)*i;
+		}
+		
+		
+	}
 
+	
 	// Returns the probability of initiating a turn based on perception history
 	public double getTurnProbability()
 	{
@@ -150,7 +156,7 @@ public class Larva implements Drawable, Updateable {
 		double rate = 0;
 		for(int i = 0; i < perceptionHistoryLength; i++)
 		{
-			rate += perception[i]*turnStimulusKernal[i];
+			rate += perception[i]*turnStimulusKernel[i];
 		}
 		
 		// Scale rate
@@ -173,7 +179,7 @@ public class Larva implements Drawable, Updateable {
 		double rate = 0;
 		for(int i = 0; i < perceptionHistoryLength; i++)
 		{
-			rate += perception[i]*headCastStimulusKernal[i];
+			rate += perception[i]*headCastStimulusKernel[i];
 		}
 		
 		// Scale rate
@@ -186,7 +192,7 @@ public class Larva implements Drawable, Updateable {
 
 	}
 	
-	
+
 	private void addPerception(double odourValueHead)
 	{
 		// Calculate perception: 1/C * dC/dt
@@ -195,11 +201,14 @@ public class Larva implements Drawable, Updateable {
 		double perception = 1/C * deltaC;
 		
 		// Add perception to history
+		// Perception history is kept in a looping array, with perceptionPointer keeping the current value
 		perceptionPointer = (perceptionPointer+1) % perceptionHistoryLength;
 		perceptionHistory[perceptionPointer] = perception;
 	}
 
-	// TODO: Check this
+	
+	// As perception history is kept in a looping array, we use this method to return an array
+	// with normal ordering
 	private double[] getPerceptionHistory()
 	{
 		double[] outArray = new double[perceptionHistoryLength];
@@ -210,7 +219,7 @@ public class Larva implements Drawable, Updateable {
 		
 		System.arraycopy(perceptionHistory, s1, outArray, 0, l1);
 		System.arraycopy(perceptionHistory, s2, outArray, l1, l2);
-//		System.out.println(Arrays.toString(outArray));
+
 		return outArray;
 	}
 

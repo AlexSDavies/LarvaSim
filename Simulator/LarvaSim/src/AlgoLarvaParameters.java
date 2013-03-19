@@ -2,12 +2,12 @@
 public class AlgoLarvaParameters extends Parameters {
 
 	public double
-		turnKernalStartVal,
-		turnKernalEndVal,
-		turnKernalDuration,
-		castKernalStartVal,
-		castKernalEndVal,
-		castKernalDuration,
+		turnKernelStartVal,
+		turnKernelEndVal,
+		turnKernelDuration,
+		castKernelStartVal,
+		castKernelEndVal,
+		castKernelDuration,
 		turnProbMult,
 		turnProbBase,
 		castProbMult,

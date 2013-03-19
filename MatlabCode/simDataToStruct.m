@@ -8,6 +8,6 @@ function data = simDataToStruct(rawData)
     data.headAngle = rawData(:,4);
     data.dAngle = rawData(:,5);
     data.bearing = rawData(:,6);
-
+	data.odourVal = rawData(:,7);
 
 end
