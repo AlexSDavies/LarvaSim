@@ -53,7 +53,7 @@ public class Simulation {
 		
 	}
 	
-	// *---------------------------*
+	// *--------------------------------------------------*
 	// Main simulation code
 	private void runSimulation(double runTime,String uniqueName)
 	{
@@ -75,6 +75,7 @@ public class Simulation {
 				u.update();
 			}
 
+			// These lines can be included to draw the 'trail' of the larva
 			// Point p = new Point(larva.getPos().mid.x,larva.getPos().mid.y);
 			// drawObjects.add(p);
 			
@@ -88,7 +89,8 @@ public class Simulation {
 			simWindow.simViewer.repaint();
 			
 			
-			// Sleep
+			// Sleep between frames 
+			// (Need this for simulation to be viewable.)
 			try {
 				Thread.sleep((int) (timestep*1000/speed));
 			} catch (InterruptedException e) {
@@ -110,6 +112,7 @@ public class Simulation {
 		
 	}
 
+	
 
 	private void initWindows() {
 

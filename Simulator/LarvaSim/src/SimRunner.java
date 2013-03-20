@@ -23,21 +23,23 @@ public class SimRunner {
 		parameters.castProbMult = 50;
 		
 		
+		ParameterPicker.getParameters();
 		
-		double runTime = 6000;
 		
-		
-		for(int i = 1; i <= 6; i++){
-		
-			parameters.castAngle = i*Math.PI/6;
-			
-			String uniqueName = "castAngle_lowCastMult_" + Integer.toString(i);
-			
-			new Simulation(parameters,runTime,uniqueName);
-		
-		}
+//		double runTime = 6000;
+//		
+//		
+//		for(int i = 1; i <= 6; i++){
+//		
+//			parameters.castAngle = i*Math.PI/6;
+//			
+//			String uniqueName = "castAngle_lowCastMult_" + Integer.toString(i);
+//			
+//			new Simulation(parameters,runTime,uniqueName);
+//		
+//		}
 
-		System.exit(0);
+		// System.exit(0);
 		
 	}
 	
