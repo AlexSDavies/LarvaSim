@@ -27,7 +27,7 @@ simData.rawData = rawData;
 %% Get turn info
 
 % -1 if turn leads to lower odour, +1 if higher
-turnLowHigh = sign(turnEndData.perception - turnStartData.perception);
+turnLowHigh = sign(turnEndData.odourVal - turnStartData.odourVal);
 
 % Changes in bearing 
 bearingDiff = turnEndData.bearing - turnStartData.bearing;
@@ -50,16 +50,18 @@ for i = 1:simData.numTurns
     startIndex = max(startIndex,1);
 
     preTurnHeadAngles = data.headAngle(startIndex:endIndex);
-    preTurnPerception = data.perception(startIndex:endIndex);
-     
+
+    preTurnOdourVal = data.odourVal(startIndex:endIndex);
+    
     headCastIndeces = getCrossings(preTurnHeadAngles,0.5236);
     
-    headCastVals = preTurnPerception(headCastIndeces == 1);
+    headCastVals = preTurnOdourVal(headCastIndeces == 1);
     
     % Get perception at zero head angle position, to compare to head cast
     % values
-    [~, zeroValPos] = min(preTurnHeadAngles);
-    zeroVal = preTurnPerception(zeroValPos);
+    [~, zeroValPos] = min(abs(preTurnHeadAngles));
+    zeroVal = preTurnOdourVal(zeroValPos);
+
     
     headCastVals(headCastVals < zeroVal) = -1;
     headCastVals(headCastVals >= zeroVal) = 1;
@@ -102,7 +104,7 @@ simData.bearingBeforeTurnsToHigh = hist(rad2deg(turnStartData.bearing(turnHighIn
 
 
 %% Scatter bearing / |delta angle|
-% 
+
 % deltaAngles = data(turnEndIndeces,3) - data(turnStartIndeces,3);
 % deltaAngles(deltaAngles > pi) = 2*pi - deltaAngles(deltaAngles > pi);
 % 
@@ -110,8 +112,6 @@ simData.bearingBeforeTurnsToHigh = hist(rad2deg(turnStartData.bearing(turnHighIn
 
 
 %% Prob left turn
-
-%% This needs fixed for 0<angle<pi
 
 numIntervals = 12;
 interval = (2*pi)/numIntervals;
@@ -126,7 +126,7 @@ for i = 1:numIntervals
     leftCount = sum((turnStartData.bearing > angle) & (turnStartData.bearing < angle+interval) & (bearingDiff < 0));
 
     if (leftCount == 0)
-        probs(i) = 0;
+        probs(i) = NaN;
     else
         probs(i) = leftCount/totalCount;
     end
@@ -142,6 +142,10 @@ simData.leftTurnProb = probs;
 %% Head casts
 
 simData.numCasts = cellfun(@length,headCasts);
+
+
+castCounts = [];
+
 
 for i = 1:max(simData.numCasts)
    castCounts(i) = sum(simData.numCasts == i); 

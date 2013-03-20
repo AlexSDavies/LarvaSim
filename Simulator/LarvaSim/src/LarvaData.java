@@ -1,6 +1,18 @@
 
+/*
 
-// This class stores a snapshot of the larva data
+This class stores a snapshot of the larva data
+
+It also determines what data is saved at the end of the simulation run, as each row of the output
+is simplt a LarvaData object converted to a string
+
+If you want to save out a new kind of data which isn't in here:
+1. Add the new type of data as a field, and initialise in constructor
+2. Add heading to heading getOutputHeadings method
+3. Add new data to toString method
+
+*/
+
 public class LarvaData{
 
 	private double t;
@@ -16,7 +28,7 @@ public class LarvaData{
 	private double headCastProb;
 	private double angle;
 	private double dAngle;
-	
+
 	// Create a larva data point with larva and a time
 	// (Rates of change default to 0
 	public LarvaData(double t,Larva l)
@@ -36,6 +48,30 @@ public class LarvaData{
 		headCastProb = l.getHeadCastStopProbability();
 				
 	}
+	
+	// Headings for output
+	// (Note: these should match representation given by toString!)
+	public static String getOutputHeadings() {
+		String headings = "time perception angle headAngle dAngle bearing odourVal";
+		return headings;
+	}
+	
+	// The value of toString is what gets saved as output of simulation
+	public String toString()
+	{
+		String output = "";
+		
+		output += getT() + " "
+				+ getPerception() + " "
+				+ getAngle() + " "
+				+ getHeadAngle() + " "
+				+ getDeltaAngle() + " "
+				+ getBearing() + " "
+				+ getOdourValueHead() + " ";
+		
+		return output;
+	}
+	
 	
 	// Create a larva data point with larva, time and previous data point
 	// (This allows setting rates of change)
@@ -102,28 +138,6 @@ public class LarvaData{
 		return dAngle;
 	}
 
-	
-	
-	// Headings for output
-	// (Note: these should match representation given by toString!)
-	public static String getOutputHeadings() {
-		String headings = "time perception angle headAngle dAngle bearing";
-		return headings;
-	}
-	
-	public String toString()
-	{
-		String output = "";
-		
-		output += getT() + " "
-				+ getPerception() + " "
-				+ getAngle() + " "
-				+ getHeadAngle() + " "
-				+ getDeltaAngle() + " "
-				+ getBearing() + " ";
-		
-		return output;
-	}
 	
 	
 }

@@ -12,6 +12,15 @@ import java.util.List;
 import javax.swing.*;
 
 
+/*
+ * 
+ * Creating a new object of this class starts a new simulation
+ * - Creates all the necessary windows for display etc.
+ * - Creates objects (larva, odour source etc.)
+ * - Starts simulation and calls the necessary objects every timestep
+ * 
+ */
+
 public class Simulation {
 
 	private List <Drawable> drawObjects;
@@ -29,20 +38,25 @@ public class Simulation {
 	private ITrace2D trace1_1, trace1_2, trace2;
 	private OdourSource odour;
 	
-	final double speed = 1000;
+	double speedup;
 	
 	final double timestep = 0.1;
 	
-	public Simulation(Parameters parameters, double runTime,String uniqueName)
+	public Simulation(Parameters parameters, double runTime, double speedup, String uniqueName)
 	{
 	
+		
 		this.parameters = parameters;
+		this.speedup = speedup;
 		
 		initObjects(parameters);
 		
 		initWindows();
 
-		// Sleep
+
+		
+		// Have to wait a second before running so the window has time to appear
+		// (TODO: There should be a better way to do this)
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -53,7 +67,7 @@ public class Simulation {
 		
 	}
 	
-	// *--------------------------------------------------*
+	// *---------------------------*
 	// Main simulation code
 	private void runSimulation(double runTime,String uniqueName)
 	{
@@ -63,8 +77,7 @@ public class Simulation {
 		// -------------- Run simulation -----------------
 		
 		double t = 0;
-		
-		
+				
 		// Setup first data point so we can get rates of change in first step 
 		LarvaData prevData = new LarvaData(t,larva); 
 		
@@ -75,7 +88,7 @@ public class Simulation {
 				u.update();
 			}
 
-			// These lines can be included to draw the 'trail' of the larva
+			// These lines can be added to draw the larva's 'trail'
 			// Point p = new Point(larva.getPos().mid.x,larva.getPos().mid.y);
 			// drawObjects.add(p);
 			
@@ -89,10 +102,9 @@ public class Simulation {
 			simWindow.simViewer.repaint();
 			
 			
-			// Sleep between frames 
-			// (Need this for simulation to be viewable.)
+			// Sleep
 			try {
-				Thread.sleep((int) (timestep*1000/speed));
+				Thread.sleep((int) (timestep*1000/speedup));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -112,7 +124,6 @@ public class Simulation {
 		
 	}
 
-	
 
 	private void initWindows() {
 

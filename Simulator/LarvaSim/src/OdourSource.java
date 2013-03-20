@@ -14,10 +14,6 @@ public class OdourSource implements Drawable {
 	public double getValue(Point p)
 	{
 		
-//		double dist = odourPos.distance(p);
-//		double d = dist/200;
-//		double val = Math.exp(-(d*d));
-		
 		double xDist = Math.abs(odourPos.x - p.x);
 		double yDist = Math.abs(odourPos.y - p.y);
 				

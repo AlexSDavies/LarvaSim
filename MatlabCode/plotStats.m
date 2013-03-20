@@ -1,6 +1,7 @@
 function plotStats(stats)
 
-close all;
+% close all;
+figure;
 
 metaStats = getStatMeta();
 
@@ -13,12 +14,14 @@ bar(turnCumulativeTics,stats.turnCumulativeProb);
 
 %% Left / right pre / post turn bearing
 
-figure;
+
+figure; title('Bearing before / after left turns');
  hold on; axis square;
 rosePlus(count2items(stats.bearingBeforeLeftTurns,-pi,pi),'r',0.3);
 rosePlus(count2items(stats.bearingAfterLeftTurns,-pi,pi),'r',0.7);
 
-figure;
+
+figure; title('Bearing before / after right turns');
  hold on; axis square;
 rosePlus(count2items(stats.bearingBeforeRightTurns,-pi,pi),'b',0.3);
 rosePlus(count2items(stats.bearingAfterRightTurns,-pi,pi),'b',0.7);

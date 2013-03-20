@@ -96,10 +96,10 @@ if fitAvailable
 
     handles = [];
     for i = 1:numFiles
-         h = plot(simParams(i).leftTurnSinFit);
+         % h = plot(simParams(i).leftTurnSinFit);
+		 % set(h,'col',cols(i,:));
+         h = plot(metaStats.turnProbBins,simStats(i).leftTurnProb-0.5,'-*','col',cols(i,:));
          handles = [handles h];
-         set(h,'col',cols(i,:));
-         plot(metaStats.turnProbBins,simStats(i).leftTurnProb-0.5,'*','col',cols(i,:));
      end
     legend(handles, lineNames);
     xlabel('Bearing');
@@ -187,11 +187,11 @@ legend(handles, lineNames);
 xlabel('Number of head casts')
 ylabel('Ratio');
 
-% Need to do parameter estimation here too
 
 %% Number of head casts to high / low
 
-oneCast = reshape([simStats.oneCastRatios]',2,6);
+% One cast
+oneCast = reshape([simStats.oneCastRatios]',2,numFiles);
 
 figure; hold on; title('One casts')
 
@@ -205,6 +205,47 @@ xlabel(xAxisParameter);
 ylabel('Ratio of head casts to high / low');
 
 legend([h1 h2],metaStats.oneCastLabels);
+
+
+% Two casts
+twoCast = reshape([simStats.twoCastRatios]',4,numFiles);
+
+figure; hold on; title('Two casts')
+
+handles = [];
+cols4 = hsv(4);
+
+for i = 1:4
+	plot([xVals(1) xVals(end)],[larvaStats.twoCastRatios(i) larvaStats.twoCastRatios(i)],'--','color',cols4(i,:));
+	h = plot(xVals,twoCast(i,:),'.','color',cols4(i,:));
+	handles = [handles h];
+end
+
+xlabel(xAxisParameter);
+ylabel('Ratio of head casts to high / low');
+
+legend(handles,metaStats.twoCastLabels);
+
+
+% Three casts
+threeCast = reshape([simStats.threeCastRatios]',8,numFiles);
+
+figure; hold on; title('Three casts')
+
+handles = [];
+cols8 = hsv(8);
+
+for i = 1:8
+	plot([xVals(1) xVals(end)],[larvaStats.threeCastRatios(i) larvaStats.threeCastRatios(i)],'--','color',cols8(i,:));
+	h = plot(xVals,threeCast(i,:),'.','color',cols8(i,:));
+	handles = [handles h];
+end
+
+xlabel(xAxisParameter);
+ylabel('Ratio of head casts to high / low');
+
+legend(handles,metaStats.threeCastLabels);
+
 
 % Collate stats and parameters to return
 allData.params = simParams;

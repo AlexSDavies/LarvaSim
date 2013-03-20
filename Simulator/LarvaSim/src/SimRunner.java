@@ -1,4 +1,10 @@
 
+/*
+ * This class is a essentially a wrapper to setup and launch the simulation
+ * 
+ * If you want to change parameters, here is the place to do it
+ * 
+ */
 public class SimRunner {
 
 	public static void main(String[] args){
@@ -6,40 +12,58 @@ public class SimRunner {
 		AlgoLarvaParameters parameters = new AlgoLarvaParameters();
 		
 		// Set default parameters 
-		parameters.castAngle = Math.PI/2;
+
+		parameters.castAngle = 2*Math.PI/3;
 		parameters.castSpeed = 1;
 		
-		parameters.turnKernalStartVal = 0.02;
-		parameters.turnKernalEndVal = -0.02;
+		parameters.turnKernelStartVal = 4;
+		parameters.turnKernelEndVal = -4;
+		parameters.turnKernelDuration = 10;
 		
-		parameters.castKernalStartVal = 0;
-		parameters.castKernalEndVal = 0.1;
-		parameters.castKernalStartPos = 0.75;
+		parameters.turnProbBase = 0.0;
+		parameters.turnProbMult = 1;
 		
-		parameters.turnProbBase = 0.1;
-		parameters.turnProbMult = 450;
+		parameters.castKernelStartVal = 0;
+		parameters.castKernelEndVal = 3;
+		parameters.castKernelDuration = 2;
 		
-		parameters.castProbBase = 0.1;
-		parameters.castProbMult = 50;
+		parameters.castProbBase = 0.0;
+		parameters.castProbMult = 1;
 		
+		// Set runtime in seconds
+		double runTime = 6000;
 		
-		ParameterPicker.getParameters();
+		// Set 'speedup' factor
+		// 1 = real-time
+		// 1000 is the max, which I use when I'm not watching it!
+		double speedup = 1;
+
+		// Work in progress - GUI parameter setting
+		// ParameterPicker.getParameters();
 		
+		// String to use for simulation output
+		// (Files get saved to the 'Data' folder)
+		String saveName = "test";
 		
-//		double runTime = 6000;
+				
+		// Create and run the simulation
+		new Simulation(parameters, runTime, speedup, saveName);
+	
+		
+		// If you want to run multiple simulations with different parameters,
+		// you can do something like this:
+//		for(int i = 1; i <= 10; i++){
 //		
-//		
-//		for(int i = 1; i <= 6; i++){
-//		
-//			parameters.castAngle = i*Math.PI/6;
+//			// Turn kernel duration from 1.5 to 6 
+//			parameters.turnKernelDuration = 1+i*0.5;
 //			
-//			String uniqueName = "castAngle_lowCastMult_" + Integer.toString(i);
+//			String uniqueName = "turnKernalDuration_" + Integer.toString(i);
 //			
-//			new Simulation(parameters,runTime,uniqueName);
+//			new Simulation(parameters,runTime,speedup,uniqueName);
 //		
 //		}
 
-		// System.exit(0);
+		System.exit(0);
 		
 	}
 	
