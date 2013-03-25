@@ -43,7 +43,7 @@ public class SimRunner {
 		
 		// String to use for simulation output
 		// (Files get saved to the 'Data' folder)
-		String saveName = "linear";
+		String saveName = "wall";
 		
 				
 		// Create and run the simulation

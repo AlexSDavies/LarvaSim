@@ -79,6 +79,12 @@ public class SimViewer extends JPanel
 		g.drawLine((int) scaledP1.x,(int) scaledP1.y,(int) scaledP2.x,(int) scaledP2.y);
 	}
 
+	public void drawCircle(Point c, double radius) {
+		Point scaledC = scale(c);
+		Point scaledR = scale(new Point(radius,radius));
+		g.drawOval((int) (scaledC.x - scaledR.x), (int) (scaledC.y - scaledR.y), (int) (2*scaledR.x), (int) (2*scaledR.y));
+	}
+	
 
 	public void fillRect(int x, int y, int i, int j) {
 		Point topLeft = scale(new Point(x,y));

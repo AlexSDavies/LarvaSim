@@ -1,4 +1,6 @@
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * This class defines the behaviour of the simulated larva
@@ -42,7 +44,10 @@ public class Larva implements Drawable, Updateable {
 	
 	private double headCastRange;
 	
-	// Create larva (must be passed an odour source)
+	private List<Wall> walls;
+	
+	
+	// Create larva
 	public Larva(double timestep, OdourSource o, Parameters parameters)
 	{
 		
@@ -62,6 +67,8 @@ public class Larva implements Drawable, Updateable {
 		
 		previousOdour = getOdourValueHead();
 		
+		walls = new ArrayList<Wall>();
+		
 		this.params = (AlgoLarvaParameters) parameters;
 		
 		initialiseKernels();
@@ -72,12 +79,14 @@ public class Larva implements Drawable, Updateable {
 	// Update method, called from simulation every step
 	public void update(){
 	
+		boolean moveSuccess;
+		
 		// Do movement	
 		switch(state){
 		
 		case FORWARD:
-			moveForward(forwardSpeed*timestep);
-			if (Math.random() < getTurnProbability())
+			moveSuccess = moveForward(forwardSpeed*timestep);
+			if (Math.random() < getTurnProbability() || !moveSuccess)
 			{
 				if(Math.random() < 0.5)
 					{state = LarvaState.CAST_LEFT;}
@@ -88,8 +97,8 @@ public class Larva implements Drawable, Updateable {
 			break;
 		
 		case CAST_LEFT:
-			turnHead(params.castSpeed*timestep);
-			if (getRelativeHeadAngle() > params.castAngle)
+			moveSuccess = turnHead(params.castSpeed*timestep);
+			if (getRelativeHeadAngle() > params.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_RIGHT;
 				headCastRange = sampleHeadCastRange();
@@ -102,8 +111,8 @@ public class Larva implements Drawable, Updateable {
 			break;
 		
 		case CAST_RIGHT:
-			turnHead(-params.castSpeed*timestep);
-			if (getRelativeHeadAngle() < -params.castAngle)
+			moveSuccess = turnHead(-params.castSpeed*timestep);
+			if (getRelativeHeadAngle() < -params.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_LEFT;
 				headCastRange = sampleHeadCastRange();
@@ -124,7 +133,16 @@ public class Larva implements Drawable, Updateable {
 		
 	}
 
-
+	// Larva must be informed of any walls
+	// so that movement functions can check for collisions 
+	public void addWall(Wall w)
+	{
+		walls.add(w);
+	}
+	
+	
+	
+	
 	// Currently returns a head cast angle uniformly from 0 to params.castAngle
 	// TODO: Consider different distributions
 	private double sampleHeadCastRange() {
@@ -132,7 +150,8 @@ public class Larva implements Drawable, Updateable {
 		return range;
 	}
 
-
+	
+	
 	private void initialiseKernels()
 	{
 		
@@ -246,37 +265,57 @@ public class Larva implements Drawable, Updateable {
 
 	// Moves forward by the specified distance
 	// (Tail section follows head)
-	private void moveForward(double dist){
-		
+	private boolean moveForward(double dist){
 		
 		double angle = Geometry.lineAngle(pos.mid, pos.head);
 			
-		Point move = new Point(Math.cos(angle)*dist,Math.sin(angle)*dist);
+		Point movement = new Point(Math.cos(angle)*dist,Math.sin(angle)*dist);
 		
-		pos.head.translate(move);
-		pos.mid.translate(move);
+		// Check for collision with any walls
+		// If collision would happen, don't move, and return false
+		Point newHeadPoint = new Point(pos.head.x + movement.x, pos.head.y + movement.y);
+		for(Wall w : walls)
+		{
+			if (w.checkCollision(pos.head,newHeadPoint))
+				{return false;}
+		}
 		
+		pos.head.translate(movement);
+		pos.mid.translate(movement);
+
 		// Tail moves separately
 		double newTailAngle = getTailAngle(); 
 		pos.tail.x = pos.mid.x - tailLength*Math.cos(newTailAngle);
 		pos.tail.y = pos.mid.y - tailLength*Math.sin(newTailAngle);
+
+		return true;
 		
 	}
 	
 	// Turns the head section by the specified angle (radians)
 	// (+ve = CCW, -ve = CW)
-	private void turnHead(double angle)
+	private boolean turnHead(double angle)
 	{
 		
 		double currentAngle = getHeadAngle();
 		double newAngle = currentAngle + angle;
+				
+		// Check for collision with any walls
+		// If collision would happen, don't move, and return false
+		Point newHeadPoint = new Point(pos.mid.x + headLength*Math.cos(newAngle), pos.mid.y + headLength*Math.sin(newAngle));		for(Wall w : walls)
+		{
+			if (w.checkCollision(pos.head,newHeadPoint))
+				{return false;}
+		}
 		
-		pos.head.x = pos.mid.x + headLength*Math.cos(newAngle);
-		pos.head.y = pos.mid.y + headLength*Math.sin(newAngle);
+		pos.head.x = newHeadPoint.x;
+		pos.head.y = newHeadPoint.y;
+		
+		return true;
 		
 	}
 	
-	
+
 	
 	// Draw method, called from Simulation every step
 	public void draw(SimViewer s)
@@ -288,9 +327,6 @@ public class Larva implements Drawable, Updateable {
 		s.drawLine(pos.tail,pos.mid);
 		
 	}
-	
-	
-	
 	
 	
 	// Returns angle of head compared to body
