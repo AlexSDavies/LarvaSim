@@ -1,34 +1,10 @@
 import java.awt.Color;
-import java.awt.Graphics;
+
+public abstract class OdourSource implements Drawable {
 
 
-public class OdourSource implements Drawable {
+	public abstract double getValue(Point p);
 
-	
-	Point odourPos;
-	
-	public OdourSource(Point point) {
-		odourPos = point;
-	}
-
-	public double getValue(Point p)
-	{
-		
-		double xDist = Math.abs(odourPos.x - p.x);
-		double yDist = Math.abs(odourPos.y - p.y);
-				
-		double xScaledDist = xDist/100;
-		double yScaledDist = yDist/70;
-		
-		double xScaledDist2 = xDist/40;
-		double yScaledDist2 = yDist/120;
-		
-		double val = 0.5 * Math.exp(-(xScaledDist*xScaledDist)-(yScaledDist*yScaledDist))
-			+ 0.5 * Math.exp(-(xScaledDist2*xScaledDist2)-(yScaledDist2*yScaledDist2));
-		
-		return val;
-		
-	}
 
 	public void draw(SimViewer s)
 	{
@@ -47,7 +23,6 @@ public class OdourSource implements Drawable {
 		}
 		
 		s.setColor(Color.BLACK);
-		//s.fillRect((int) odourPos.x, (int) odourPos.y, 5, 5);
 		
 	}
 	

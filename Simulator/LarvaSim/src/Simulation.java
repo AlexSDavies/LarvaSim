@@ -1,12 +1,5 @@
 
-import info.monitorenter.gui.chart.Chart2D;
-import info.monitorenter.gui.chart.ITrace2D;
-import info.monitorenter.gui.chart.traces.Trace2DLtd;
-
-import java.awt.Color;
-import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.*;
@@ -35,7 +28,6 @@ public class Simulation {
 	private SimWindow simWindow;
 	private GraphWindow graphWindow;
 	
-	private ITrace2D trace1_1, trace1_2, trace2;
 	private OdourSource odour;
 	
 	double speedup;
@@ -101,7 +93,6 @@ public class Simulation {
 			graphWindow.updateGraphs(data);
 			simWindow.simViewer.repaint();
 			
-			
 			// Sleep
 			try {
 				Thread.sleep((int) (timestep*1000/speedup));
@@ -117,7 +108,11 @@ public class Simulation {
 		
 		// -------------- Process data -----------------
 		
-		DataProcessing.doAll(larvaData,parameters,uniqueName);
+		// Don't process data if window closed by user
+		if (simWindow.isShowing())
+		{
+			DataProcessing.doAll(larvaData,parameters,simWindow.simViewer,uniqueName);
+		}
 		
 		simWindow.dispose();
 		graphWindow.dispose();
@@ -158,7 +153,25 @@ public class Simulation {
 	{
 		
 		// Create objects
-		odour = new OdourSource(new Point(200,200));
+		
+		ArrayList<OdourSource> odourList = new ArrayList<OdourSource>();
+		
+		//SingleOdourSource odour1 = new SingleOdourSource(new Point(200,200),100,70,40,120);
+		//odour1.setIntensity(1);
+		//odourList.add(odour1);
+		
+		//SingleOdourSource odour2 = new SingleOdourSource(new Point(400,300),50,100,50,50);
+		//odour2.setIntensity(0.5);
+		//odourList.add(odour2);
+		
+		//OneDimOdourSource linOdour = new OneDimOdourSource(300, 1.0/300);
+		//odourList.add(linOdour);
+		
+		LinearOdourSource linSource = new LinearOdourSource(new Point(200,200), 1.0/200);
+		odourList.add(linSource);
+		
+		odour = new MultiOdourSource(odourList);
+		
 		
 		larva = new Larva(timestep,odour,parameters);
 		

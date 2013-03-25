@@ -22,12 +22,13 @@ public class AlgoLarvaParameters extends Parameters {
 		castAngle = Math.PI/2;
 		castSpeed = 1;
 		
-		turnKernalStartVal = 0.02;
-		turnKernalEndVal = -0.02;
+		turnKernelStartVal = 0.02;
+		turnKernelEndVal = -0.02;
+		turnKernelDuration = 10;
 		
-		castKernalStartVal = 0;
-		castKernalEndVal = 0.1;
-		castKernalStartPos = 0.75;
+		castKernelStartVal = 0;
+		castKernelEndVal = 0.1;
+		castKernelDuration = 2;
 		
 		turnProbBase = 0.1;
 		turnProbMult = 450;

@@ -1,9 +1,9 @@
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Shape;
-import java.awt.Stroke;
 import java.util.List;
 import java.awt.Graphics2D;
 
@@ -22,7 +22,7 @@ public class SimViewer extends JPanel
 	Graphics2D g;
 	
 	// SimViewer is given a list of objects to draw
-	// Default arena size = 200x200
+	// Default arena size = 500x500
 	public SimViewer(List <Drawable> drawObjects)
 	{
 		this.drawObjects = drawObjects;
@@ -64,6 +64,14 @@ public class SimViewer extends JPanel
 	public void setColor(Color c) {
 		g.setColor(c);
 	}
+	
+	public void setTransparecy(float val)
+	{
+		int rule = AlphaComposite.SRC_OVER;
+	    Composite comp = AlphaComposite.getInstance(rule, val);
+        g.setComposite(comp);
+	}
+	
 	
 	public void drawLine(Point p1, Point p2) {
 		Point scaledP1 = scale(p1);

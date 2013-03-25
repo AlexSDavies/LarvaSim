@@ -1,17 +1,22 @@
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 
 public class DataProcessing {
 
 	
 	// Runs through all data processing and saves data
-	public static void doAll(List<LarvaData> larvaData, Parameters parameters, String uniqueName) {
+	public static void doAll(List<LarvaData> larvaData, Parameters parameters, SimViewer simViewer, String uniqueName) {
 		
-		String path = "../../../Data/";
+		String path = "../../Data/";
 		
 		// Save all data
 		saveData(larvaData,path+"data_"+uniqueName);
@@ -25,9 +30,32 @@ public class DataProcessing {
 		// Save Parameters
 		saveParameters(parameters,path+"parameters_"+uniqueName);
 		
+		// Save image of path
+		saveImage(larvaData,simViewer,path+"path_"+uniqueName);
+		
 	}
 	
 	
+	// Saves an image of the larva's path over the whole simulation
+	private static void saveImage(List<LarvaData> larvaData, SimViewer simViewer, String saveFile) {
+		
+		// Add all points on path to draw
+		for (LarvaData l : larvaData)
+			{simViewer.drawObjects.add(l.getMidPos());}
+		
+		// Copy to buffered image and save
+		BufferedImage bImg = new BufferedImage(simViewer.getWidth(), simViewer.getWidth(), BufferedImage.TYPE_INT_RGB);
+		Graphics2D saveGraphics = bImg.createGraphics();
+		simViewer.paintComponent(saveGraphics);
+		try
+			{ImageIO.write(bImg, "png", new File(saveFile + ".png"));}
+		catch (IOException e)
+			{e.printStackTrace();}
+		
+		
+	}
+
+
 
 	// Returns the LarvaData objects at the start times of all turns in a list of LarvaData
 	public static List<int[]> getTurnPoints(List<LarvaData> larvaData) {

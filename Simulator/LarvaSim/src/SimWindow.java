@@ -1,14 +1,11 @@
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 
 import info.monitorenter.gui.chart.Chart2D;
-import info.monitorenter.gui.chart.ITrace2D;
-import info.monitorenter.gui.chart.traces.Trace2DSimple;
+
 
 
 public class SimWindow extends JFrame {

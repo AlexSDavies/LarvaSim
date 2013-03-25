@@ -1,8 +1,4 @@
 import java.awt.Color;
-import java.awt.Graphics;
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Random;
 
 /*
  * This class defines the behaviour of the simulated larva
@@ -44,7 +40,7 @@ public class Larva implements Drawable, Updateable {
 	
 	private AlgoLarvaParameters params;
 	
-	
+	private double headCastRange;
 	
 	// Create larva (must be passed an odour source)
 	public Larva(double timestep, OdourSource o, Parameters parameters)
@@ -52,7 +48,7 @@ public class Larva implements Drawable, Updateable {
 		
 		// Set initial position
 		// TODO: Alter to take position as an input
-		pos = new LarvaPosition(new Point(200,420), new Point(200,410), new Point(200,400));
+		pos = new LarvaPosition(new Point(200,250), new Point(210,250), new Point(220,250));
 		odour = o;
 		
 		// Initialise various things 
@@ -88,23 +84,34 @@ public class Larva implements Drawable, Updateable {
 				else
 					{state = LarvaState.CAST_RIGHT;}
 			}
+			headCastRange = sampleHeadCastRange();
 			break;
 		
 		case CAST_LEFT:
 			turnHead(params.castSpeed*timestep);
 			if (getRelativeHeadAngle() > params.castAngle)
-				{state = LarvaState.CAST_RIGHT;}
+			{
+				state = LarvaState.CAST_RIGHT;
+				headCastRange = sampleHeadCastRange();
+			}
 			if (Math.random() < getHeadCastStopProbability())
-				{state = LarvaState.FORWARD;}
+			{
+				state = LarvaState.FORWARD;
+			}
 			
 			break;
 		
 		case CAST_RIGHT:
 			turnHead(-params.castSpeed*timestep);
 			if (getRelativeHeadAngle() < -params.castAngle)
-				{state = LarvaState.CAST_LEFT;}
+			{
+				state = LarvaState.CAST_LEFT;
+				headCastRange = sampleHeadCastRange();
+			}
 			if (Math.random() < getHeadCastStopProbability())
-				{state = LarvaState.FORWARD;}
+			{
+				state = LarvaState.FORWARD;
+			}
 			
 			break;
 			
@@ -117,7 +124,15 @@ public class Larva implements Drawable, Updateable {
 		
 	}
 
-	
+
+	// Currently returns a head cast angle uniformly from 0 to params.castAngle
+	// TODO: Consider different distributions
+	private double sampleHeadCastRange() {
+		double range = Math.random() * params.castAngle;
+		return range;
+	}
+
+
 	private void initialiseKernels()
 	{
 		

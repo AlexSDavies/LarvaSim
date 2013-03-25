@@ -39,9 +39,9 @@ public class LarvaData{
 		odourValueMid = l.getOdourValueMid();
 		headAngle = l.getRelativeHeadAngle();
 		angle = l.getBodyAngle();
-		headPos = l.getPos().head;
-		midPos = l.getPos().mid;
-		tailPos = l.getPos().tail;
+		headPos = new Point(l.getPos().head.x,l.getPos().head.y);
+		midPos = new Point(l.getPos().mid.x,l.getPos().mid.y);
+		tailPos = new Point(l.getPos().tail.x,l.getPos().tail.y);
 		bearing = l.getBearing();
 		perception = l.getPerception();
 		turnProb = l.getTurnProbability();

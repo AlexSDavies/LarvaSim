@@ -20,7 +20,7 @@ public class SimRunner {
 		parameters.turnKernelEndVal = -4;
 		parameters.turnKernelDuration = 10;
 		
-		parameters.turnProbBase = 0.0;
+		parameters.turnProbBase = 0.01;
 		parameters.turnProbMult = 1;
 		
 		parameters.castKernelStartVal = 0;
@@ -36,14 +36,14 @@ public class SimRunner {
 		// Set 'speedup' factor
 		// 1 = real-time
 		// 1000 is the max, which I use when I'm not watching it!
-		double speedup = 1;
+		double speedup = 1000;
 
 		// Work in progress - GUI parameter setting
 		// ParameterPicker.getParameters();
 		
 		// String to use for simulation output
 		// (Files get saved to the 'Data' folder)
-		String saveName = "test";
+		String saveName = "linear";
 		
 				
 		// Create and run the simulation
@@ -52,12 +52,10 @@ public class SimRunner {
 		
 		// If you want to run multiple simulations with different parameters,
 		// you can do something like this:
-//		for(int i = 1; i <= 10; i++){
+//		for(int i = -2; i <= 4; i++){
 //		
-//			// Turn kernel duration from 1.5 to 6 
-//			parameters.turnKernelDuration = 1+i*0.5;
-//			
-//			String uniqueName = "turnKernalDuration_" + Integer.toString(i);
+//			double odourIntensity = Math.pow(10, i);
+//			String uniqueName = "odourIntensity" + Double.toString(odourIntensity);
 //			
 //			new Simulation(parameters,runTime,speedup,uniqueName);
 //		
