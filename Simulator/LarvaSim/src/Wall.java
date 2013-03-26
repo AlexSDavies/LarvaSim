@@ -14,7 +14,7 @@ public class Wall implements Drawable {
 	
 	public void draw(SimViewer s)
 	{
-		s.setColor(Color.BLACK);
+		s.setColor(Color.GRAY);
 		s.setLineWidth(3);
 		s.drawCircle(centre,radius);
 	}
@@ -24,7 +24,7 @@ public class Wall implements Drawable {
 	{
 		double dist1 = p1.distance(centre);
 		double dist2 = p2.distance(centre);
-		if (Math.min(dist1,dist2) < radius && Math.max(dist1, dist2) > radius)
+		if (dist1 < radius && dist2 > radius)
 			{return true;}
 		else
 			{return false;}	

@@ -277,7 +277,13 @@ public class Larva implements Drawable, Updateable {
 		for(Wall w : walls)
 		{
 			if (w.checkCollision(pos.head,newHeadPoint))
-				{return false;}
+			{
+				double wallAngle = Geometry.normaliseAngle(Geometry.lineAngle(pos.mid,pos.head) - Geometry.lineAngle(w.centre,pos.head));
+				double turnDir = Math.signum(wallAngle);
+				System.out.println((int) (turnDir));
+				turnHead(turnDir*params.castSpeed*timestep);
+				return true;
+			}
 		}
 		
 		pos.head.translate(movement);
