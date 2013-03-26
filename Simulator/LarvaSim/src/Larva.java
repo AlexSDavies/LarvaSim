@@ -1,6 +1,4 @@
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
  * This class defines the behaviour of the simulated larva
@@ -24,7 +22,6 @@ public class Larva implements Drawable, Updateable {
 	
 	// Fields
 	private LarvaPosition pos;	
-	private OdourSource odour;
 	
 	private double timestep;
 	
@@ -44,20 +41,26 @@ public class Larva implements Drawable, Updateable {
 	
 	private double headCastRange;
 	
-	private List<Wall> walls;
+	private Simulation sim;
+	
+	Color col;
 	
 	
 	// Create larva
-	public Larva(double timestep, OdourSource o, Parameters parameters)
+	// Larva must be passed parent simulator to access other objects in simulation
+	public Larva(Simulation sim, Point startPos, double dir)
 	{
 		
+		this.sim = sim;
+		
 		// Set initial position
-		// TODO: Alter to take position as an input
-		pos = new LarvaPosition(new Point(200,250), new Point(210,250), new Point(220,250));
-		odour = o;
+		Point midPos = startPos;
+		Point headPos = new Point(midPos.x + headLength*Math.cos(dir), midPos.y + headLength*Math.sin(dir));
+		Point tailPos = new Point(midPos.x - headLength*Math.cos(dir), midPos.y - headLength*Math.sin(dir));
+		pos = new LarvaPosition(headPos, midPos, tailPos);
 		
 		// Initialise various things 
-		this.timestep = timestep;
+		timestep = sim.timestep;
 		perceptionHistoryLength = (int) (perceptionHistoryTime/timestep);
 		
 		state = LarvaState.FORWARD;
@@ -67,18 +70,20 @@ public class Larva implements Drawable, Updateable {
 		
 		previousOdour = getOdourValueHead();
 		
-		walls = new ArrayList<Wall>();
-		
-		this.params = (AlgoLarvaParameters) parameters;
+		params = (AlgoLarvaParameters) sim.getParameters();
 		
 		initialiseKernels();
 						
+		// Switch for exciting multicoloured larvae
+		// col = new Color((float) Math.random(), (float) Math.random(), (float) Math.random());
+		col = Color.black;
+		
 	}
-	
-	
+
+
 	// Update method, called from simulation every step
 	public void update(){
-	
+		
 		boolean moveSuccess;
 		
 		// Do movement	
@@ -133,15 +138,6 @@ public class Larva implements Drawable, Updateable {
 		
 	}
 
-	// Larva must be informed of any walls
-	// so that movement functions can check for collisions 
-	public void addWall(Wall w)
-	{
-		walls.add(w);
-	}
-	
-	
-	
 	
 	// Currently returns a head cast angle uniformly from 0 to params.castAngle
 	// TODO: Consider different distributions
@@ -274,13 +270,12 @@ public class Larva implements Drawable, Updateable {
 		// Check for collision with any walls
 		// If collision would happen, don't move, and return false
 		Point newHeadPoint = new Point(pos.head.x + movement.x, pos.head.y + movement.y);
-		for(Wall w : walls)
+		for(Wall w : sim.getWalls())
 		{
 			if (w.checkCollision(pos.head,newHeadPoint))
 			{
 				double wallAngle = Geometry.normaliseAngle(Geometry.lineAngle(pos.mid,pos.head) - Geometry.lineAngle(w.centre,pos.head));
 				double turnDir = Math.signum(wallAngle);
-				System.out.println((int) (turnDir));
 				turnHead(turnDir*params.castSpeed*timestep);
 				return true;
 			}
@@ -308,7 +303,8 @@ public class Larva implements Drawable, Updateable {
 				
 		// Check for collision with any walls
 		// If collision would happen, don't move, and return false
-		Point newHeadPoint = new Point(pos.mid.x + headLength*Math.cos(newAngle), pos.mid.y + headLength*Math.sin(newAngle));		for(Wall w : walls)
+		Point newHeadPoint = new Point(pos.mid.x + headLength*Math.cos(newAngle), pos.mid.y + headLength*Math.sin(newAngle));
+		for(Wall w : sim.getWalls())
 		{
 			if (w.checkCollision(pos.head,newHeadPoint))
 				{return false;}
@@ -327,7 +323,7 @@ public class Larva implements Drawable, Updateable {
 	public void draw(SimViewer s)
 	{
 	
-		s.setColor(Color.BLACK);
+		s.setColor(col);
 		s.setLineWidth(3);
 		s.drawLine(pos.mid,pos.head);
 		s.drawLine(pos.tail,pos.mid);
@@ -364,8 +360,8 @@ public class Larva implements Drawable, Updateable {
 		
 		// Calculate angle of maximum odour increase
 		double curVal = getOdourValueMid();
-		double deltaXVal = odour.getValue(new Point(pos.mid.x + 1, pos.mid.y)) - curVal;
-		double deltaYVal = odour.getValue(new Point(pos.mid.x, pos.mid.y + 1)) - curVal;
+		double deltaXVal = sim.getOdour().getValue(new Point(pos.mid.x + 1, pos.mid.y)) - curVal;
+		double deltaYVal = sim.getOdour().getValue(new Point(pos.mid.x, pos.mid.y + 1)) - curVal;
 		
 		double odourAngle = Math.atan2(deltaYVal, deltaXVal);
 		
@@ -383,12 +379,12 @@ public class Larva implements Drawable, Updateable {
 	
 	public double getOdourValueHead()
 	{
-		return odour.getValue(pos.head);
+		return sim.getOdour().getValue(pos.head);
 	}
 	
 	public double getOdourValueMid()
 	{
-		return odour.getValue(pos.mid);
+		return sim.getOdour().getValue(pos.mid);
 	}
 
 	

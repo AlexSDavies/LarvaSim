@@ -9,57 +9,36 @@ public class SimRunner {
 
 	public static void main(String[] args){
 		
+		// Create new set of (default) parameters
 		AlgoLarvaParameters parameters = new AlgoLarvaParameters();
-		
-		// Set default parameters 
-
-		parameters.castAngle = 2*Math.PI/3;
-		parameters.castSpeed = 1;
-		
-		parameters.turnKernelStartVal = 4;
-		parameters.turnKernelEndVal = -4;
-		parameters.turnKernelDuration = 10;
-		
-		parameters.turnProbBase = 0.01;
-		parameters.turnProbMult = 1;
-		
-		parameters.castKernelStartVal = 0;
-		parameters.castKernelEndVal = 3;
-		parameters.castKernelDuration = 2;
-		
-		parameters.castProbBase = 0.0;
-		parameters.castProbMult = 1;
-		
+				
 		// Set runtime in seconds
 		double runTime = 6000;
 		
 		// Set 'speedup' factor
-		// 1 = real-time
-		// 1000 is the max, which I use when I'm not watching it!
-		double speedup = 1000;
-
-		// Work in progress - GUI parameter setting
-		// ParameterPicker.getParameters();
+		// (1 is real-time, 1000 is the max)
+		double speedup = 10;
 		
 		// String to use for simulation output
 		// (Files get saved to the 'Data' folder)
-		String saveName = "wall";
-		
+		String saveName = "PITest";
 				
-		// Create and run the simulation
-		new Simulation(parameters, runTime, speedup, saveName);
+		// Create the simulation
+		Simulation sim = new Simulation(parameters, saveName);
 	
+		// Add desired objects to simulator
+		sim.addOdour(new SingleOdourSource(new Point(-100,0), 100, 70, 40, 120));
+		sim.addWall(new Wall(new Point(0,0),200));
+		for (int i = 1; i<10; i++)
+		{
+			sim.addLarva(new Point(100*Math.random(),100*Math.random()), 0);
+		}
 		
-		// If you want to run multiple simulations with different parameters,
-		// you can do something like this:
-//		for(int i = -2; i <= 4; i++){
-//		
-//			double odourIntensity = Math.pow(10, i);
-//			String uniqueName = "odourIntensity" + Double.toString(odourIntensity);
-//			
-//			new Simulation(parameters,runTime,speedup,uniqueName);
-//		
-//		}
+		
+		// Run simulation
+		sim.runSimulation(runTime,speedup);
+		
+		
 
 		System.exit(0);
 		
