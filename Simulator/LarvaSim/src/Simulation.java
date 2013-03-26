@@ -156,23 +156,23 @@ public class Simulation {
 		
 		ArrayList<OdourSource> odourList = new ArrayList<OdourSource>();
 		
-		//SingleOdourSource odour1 = new SingleOdourSource(new Point(200,200),100,70,40,120);
-		//odour1.setIntensity(1);
-		//odourList.add(odour1);
+		SingleOdourSource odour1 = new SingleOdourSource(new Point(-200,0),100,70,40,120);
+		odour1.setIntensity(1);
+		odourList.add(odour1);
 		
 		//SingleOdourSource odour2 = new SingleOdourSource(new Point(400,300),50,100,50,50);
 		//odour2.setIntensity(0.5);
 		//odourList.add(odour2);
 		
-		OneDimOdourSource linOdour = new OneDimOdourSource(300, 1.0/300);
-		odourList.add(linOdour);
+		//OneDimOdourSource linOdour = new OneDimOdourSource(0, 1.0/300);
+		//odourList.add(linOdour);
 		
 		//LinearOdourSource linSource = new LinearOdourSource(new Point(200,200), 1.0/200);
 		//odourList.add(linSource);
 		
 		odour = new MultiOdourSource(odourList);
 		
-		Wall wall = new Wall(new Point(250,250),200);
+		Wall wall = new Wall(new Point(0,0),200);
 		
 		larva = new Larva(timestep,odour,parameters);
 		larva.addWall(wall);
@@ -183,8 +183,9 @@ public class Simulation {
 		// NOTE: Order added is order drawn
 		drawObjects = new ArrayList<Drawable>();
 		drawObjects.add(odour);
-		drawObjects.add(larva);
 		drawObjects.add(wall);
+		drawObjects.add(larva);
+		
 		
 		// Add objects to list of items which need updated every cycle
 		updateObjects = new ArrayList<Updateable>();

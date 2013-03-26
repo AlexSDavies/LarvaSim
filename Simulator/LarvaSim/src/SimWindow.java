@@ -31,11 +31,10 @@ public class SimWindow extends JFrame {
 	// Set up UI elements
 	private void initUI()
 	{
-		
 		setSize(500,500);
 		setLocation(20, 20);
 		
-		simViewer = new SimViewer(drawObjects);
+		simViewer = new SimViewer(drawObjects,-250,250,-250,250);
 		getContentPane().add(simViewer,BorderLayout.CENTER);
 		simViewer.setPreferredSize(new Dimension(100,100));
 

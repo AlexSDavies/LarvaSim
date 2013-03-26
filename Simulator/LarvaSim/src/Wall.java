@@ -16,7 +16,7 @@ public class Wall implements Drawable {
 	{
 		s.setColor(Color.GRAY);
 		s.setLineWidth(3);
-		s.drawCircle(centre,radius);
+		s.drawCircle(new Point(centre.x-radius, centre.y-radius),new Point(centre.x+radius, centre.y+radius));
 	}
 
 	// Check if a movement from p1 to p2 leads to a collision with this wall

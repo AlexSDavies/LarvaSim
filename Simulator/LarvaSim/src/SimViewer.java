@@ -18,15 +18,23 @@ public class SimViewer extends JPanel
 	List <Drawable> drawObjects;
 	
 	Dimension arenaSize;
+	int minX, maxX, minY, maxY;
 	
 	Graphics2D g;
 	
 	// SimViewer is given a list of objects to draw
 	// Default arena size = 500x500
-	public SimViewer(List <Drawable> drawObjects)
+	public SimViewer(List <Drawable> drawObjects, int leftX, int rightX, int topY, int botY)
 	{
 		this.drawObjects = drawObjects;
-		arenaSize = new Dimension(500,500);
+		
+		minX = leftX;
+		maxX = rightX;
+		minY = topY;
+		maxY = botY;
+		
+		arenaSize = new Dimension(maxX-minX, maxY-minY);
+		
 	}
 	
 	
@@ -52,8 +60,7 @@ public class SimViewer extends JPanel
 		Dimension dim = getSize();
 		double xScale = dim.getWidth() / arenaSize.getWidth();
 		double yScale = dim.getHeight() / arenaSize.getHeight();
-		return new Point(p.x*xScale, p.y*yScale);
-		
+		return new Point((p.x - minX)*xScale, (p.y-minY)*yScale);
 	}
 
 
@@ -79,17 +86,17 @@ public class SimViewer extends JPanel
 		g.drawLine((int) scaledP1.x,(int) scaledP1.y,(int) scaledP2.x,(int) scaledP2.y);
 	}
 
-	public void drawCircle(Point c, double radius) {
-		Point scaledC = scale(c);
-		Point scaledR = scale(new Point(radius,radius));
-		g.drawOval((int) (scaledC.x - scaledR.x), (int) (scaledC.y - scaledR.y), (int) (2*scaledR.x), (int) (2*scaledR.y));
+	public void drawCircle(Point topLeft, Point botRight) {
+		Point scaledTopLeft = scale(topLeft);
+		Point scaledBotRight = scale(botRight);
+		g.drawOval((int) scaledTopLeft.x, (int) scaledTopLeft.y, (int) (scaledBotRight.x - scaledTopLeft.x), (int) (scaledBotRight.y - scaledTopLeft.y));
 	}
 	
 
-	public void fillRect(int x, int y, int i, int j) {
-		Point topLeft = scale(new Point(x,y));
-		Point size = scale(new Point(i,j));
-		g.fillRect((int) topLeft.x,(int) topLeft.y, (int) Math.ceil(size.x),(int) Math.ceil(size.y));
+	public void fillRect(Point topLeft, Point botRight) {
+		Point scaledTopLeft = scale(topLeft);
+		Point scaledBotRight = scale(botRight);
+		g.fillRect((int) scaledTopLeft.x,(int) scaledTopLeft.y, (int) (scaledBotRight.x - scaledTopLeft.x),(int) (scaledBotRight.y - scaledTopLeft.y));
 	}
 
 
