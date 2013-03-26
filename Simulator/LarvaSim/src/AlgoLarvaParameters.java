@@ -19,22 +19,24 @@ public class AlgoLarvaParameters extends Parameters {
 	{
 		// Set default parameter values
 		// TODO: Change to match SimRunner
-		castAngle = Math.PI/2;
+		castAngle = 2*Math.PI/3;
 		castSpeed = 1;
 		
-		turnKernelStartVal = 0.02;
-		turnKernelEndVal = -0.02;
+		turnKernelStartVal = 4;
+		turnKernelEndVal = -4;
 		turnKernelDuration = 10;
 		
+		turnProbBase = 0.01;
+		turnProbMult = 1;
+		
 		castKernelStartVal = 0;
-		castKernelEndVal = 0.1;
+		castKernelEndVal = 3;
 		castKernelDuration = 2;
 		
-		turnProbBase = 0.1;
-		turnProbMult = 450;
+		castProbBase = 0.0;
+		castProbMult = 1;
 		
-		castProbBase = 0.1;
-		castProbMult = 50;
+		
 		
 	}
 	

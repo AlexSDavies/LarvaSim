@@ -1,11 +1,10 @@
-import java.util.ArrayList;
 import java.util.List;
 
 public class MultiOdourSource extends OdourSource {
 
 	public List<OdourSource> odourSources;
 	
-	public MultiOdourSource(ArrayList<OdourSource> odourSources)
+	public MultiOdourSource(List<OdourSource> odourSources)
 	{
 		this.odourSources = odourSources;
 	}

@@ -14,8 +14,8 @@ public class Wall implements Drawable {
 	
 	public void draw(SimViewer s)
 	{
-		s.setColor(Color.GRAY);
-		s.setLineWidth(3);
+		s.setColor(Color.BLACK);
+		s.setLineWidth(5);
 		s.drawCircle(new Point(centre.x-radius, centre.y-radius),new Point(centre.x+radius, centre.y+radius));
 	}
 

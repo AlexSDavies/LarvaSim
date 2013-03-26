@@ -21,7 +21,7 @@ public class SimRunner {
 		
 		// String to use for simulation output
 		// (Files get saved to the 'Data' folder)
-		String saveName = "PITest";
+		String saveName = "Test";
 				
 		// Create the simulation
 		Simulation sim = new Simulation(parameters, saveName);
@@ -29,17 +29,11 @@ public class SimRunner {
 		// Add desired objects to simulator
 		sim.addOdour(new SingleOdourSource(new Point(-100,0), 100, 70, 40, 120));
 		sim.addWall(new Wall(new Point(0,0),200));
-		for (int i = 1; i<10; i++)
-		{
-			sim.addLarva(new Point(100*Math.random(),100*Math.random()), 0);
-		}
-		
+		sim.addLarva(new Point(100*Math.random(),100*Math.random()), 0);
 		
 		// Run simulation
 		sim.runSimulation(runTime,speedup);
 		
-		
-
 		System.exit(0);
 		
 	}

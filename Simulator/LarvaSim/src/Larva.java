@@ -39,6 +39,8 @@ public class Larva implements Drawable, Updateable {
 	
 	private AlgoLarvaParameters params;
 	
+	@SuppressWarnings("unused")
+	// This may be used in update step to do variable head cast max ranges
 	private double headCastRange;
 	
 	private Simulation sim;
