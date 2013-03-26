@@ -52,7 +52,7 @@ public class LarvaData{
 	// Headings for output
 	// (Note: these should match representation given by toString!)
 	public static String getOutputHeadings() {
-		String headings = "time perception angle headAngle dAngle bearing odourVal";
+		String headings = "time perception angle headAngle dAngle bearing odourVal midPosX midPosY";
 		return headings;
 	}
 	
@@ -67,7 +67,9 @@ public class LarvaData{
 				+ getHeadAngle() + " "
 				+ getDeltaAngle() + " "
 				+ getBearing() + " "
-				+ getOdourValueHead() + " ";
+				+ getOdourValueHead() + " "
+				+ getMidPos().x + " "
+				+ getMidPos().y + " ";
 		
 		return output;
 	}

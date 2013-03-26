@@ -5,8 +5,6 @@ function simData = getSimStats(dataFile,turnsFile,timestep)
 
 rawData = dlmread(['../Data/' dataFile], ' ',1,0);
 
-
-
 data = simDataToStruct(rawData);
 
 turnIndeces = dlmread(['../Data/' turnsFile],' ',0,0);
@@ -179,5 +177,16 @@ threeCastCounts(7) = sum(cellfun(@(x) isequal(x,[-1 1 -1]'),headCasts));
 threeCastCounts(8) = sum(cellfun(@(x) isequal(x,[-1 -1 -1]'),headCasts));
 
 simData.threeCastRatios = threeCastCounts./sum(threeCastCounts);
+
+%% PI Index
+% Assumes 0 centred arena radius 200
+
+simData.midPos = data.midPos;
+size = 200;
+
+leftCount = sum(simData.midPos(:,1)< (0 - size/10));
+rightCount = sum(simData.midPos(:,1)< (0 + size/10));
+
+simData.PI = leftCount/rightCount;
 
 
