@@ -5,14 +5,12 @@ import java.util.List;
 import javax.swing.*;
 
 
-/*
- * 
- * Creating a new object of this class starts a new simulation
- * - Creates all the necessary windows for display etc.
- * - Creates objects (larva, odour source etc.)
- * - Starts simulation and calls the necessary objects every timestep
- * 
- */
+// TODO: Quick description of how to create simulation with new setup
+
+// Distances are in 1/10 mm
+// TODO: Change to something more sensible
+
+// Times are in seconds
 
 public class Simulation {
 
@@ -48,16 +46,6 @@ public class Simulation {
 		
 		initObjects(parameters);
 		
-		initWindows();
-
-		
-		// Have to wait a second before running so the window has time to appear
-		// (TODO: There should be a better way to do this)
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
 		
 	}
 	
@@ -67,6 +55,8 @@ public class Simulation {
 	public void runSimulation(double runTime, double speedup)
 	{
 				
+		initWindows();
+		
 		// Check we have at least one larva
 		if (larva == null)
 		{
@@ -82,9 +72,7 @@ public class Simulation {
 		
 		// Setup first data point so we can get rates of change in first step 
 		LarvaData prevData = new LarvaData(0,larva); 
-		
-		System.out.println(simWindow);
-		
+				
 		while(simWindow.isShowing() && t < runTime){
 			
 			// Update all objects
@@ -147,7 +135,6 @@ public class Simulation {
 			public void run()
 			{
 				simWindow = new SimWindow(drawObjects);
-				// simWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				simWindow.setVisible(true);
 			}
 		};
@@ -176,14 +163,18 @@ public class Simulation {
 
 	public void addLarva(Point pos, double dir)
 	{
-		Larva l = new Larva(this,pos,dir);
+		Larva l = new Larva_NoBackswing(this,pos,dir);
+		addLarva(l);
+	}
+	
+	public void addLarva(Larva l)
+	{
 		drawObjects.add(l);
 		updateObjects.add(l);
 		
 		// If no larva currently tracked, track this one
 		if (larva == null)
 			{setTrackedLarva(l);}
-		
 	}
 	
 	// Sets which larva we want to track data for
@@ -203,7 +194,7 @@ public class Simulation {
 	{
 		walls.add(wall);
 		drawObjects.add(wall);
-		odour.setRadius(wall.radius);
+		odour.setDrawRadius(wall.radius);
 	}
 	
 

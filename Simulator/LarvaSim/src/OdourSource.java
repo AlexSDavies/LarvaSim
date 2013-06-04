@@ -3,28 +3,31 @@ import java.awt.Color;
 public abstract class OdourSource implements Drawable {
 
 
-	double radius;
-	
+	private double radius;
+
 	public abstract double getValue(Point p);
 	
-	public void setRadius(double r)
+	// This can be set if you only want to draw the odour within a certain circular boundry
+	// (Doesn't change the functionality)
+	public void setDrawRadius(double r)
 	{
 		radius = r;
 	}
+
 	
 	public void draw(SimViewer s)
 	{
 			
-		int divSize = 5;
-		int numXDivs = (s.maxX - s.minX)/divSize;
-		int numYDivs = (s.maxY - s.minY)/divSize;
+		double divSize = 0.5;
+		int numXDivs = (int) ((s.maxX - s.minX)/divSize);
+		int numYDivs = (int) ((s.maxY - s.minY)/divSize);
 		
 		for (int ix = 0; ix <= numXDivs; ix++)
 		{
 			for (int iy = 0; iy <= numYDivs; iy++)
 			{
-				int x = s.minX + ix*divSize;
-				int y = s.minY + iy*divSize;
+				double x = (s.minX + ix*divSize);
+				double y = (s.minY + iy*divSize);
 				Point p = new Point(x+divSize/2,y+divSize/2);
 				float odourVal = (float) getValue(p);
 				float hueVal = (1-odourVal)*240/360;
@@ -34,7 +37,7 @@ public abstract class OdourSource implements Drawable {
 				else
 					{s.setColor(Color.WHITE);}
 				
-				s.fillRect(new Point(x-0.5,y-0.5), new Point(x+divSize+0.5,y+divSize+0.5));
+				s.fillRect(new Point(x,y), new Point(x+divSize,y+divSize));
 			}
 		}
 		

@@ -96,13 +96,13 @@ public class SimViewer extends JPanel
 	public void fillRect(Point topLeft, Point botRight) {
 		Point scaledTopLeft = scale(topLeft);
 		Point scaledBotRight = scale(botRight);
-		g.fillRect((int) scaledTopLeft.x,(int) scaledTopLeft.y, (int) (scaledBotRight.x - scaledTopLeft.x),(int) (scaledBotRight.y - scaledTopLeft.y));
+		g.fillRect((int) Math.floor(scaledTopLeft.x), (int) Math.floor(scaledTopLeft.y), (int) Math.ceil(scaledBotRight.x - scaledTopLeft.x),(int) Math.ceil(scaledBotRight.y - scaledTopLeft.y));
 	}
 
 
 	public void drawPoint(Point p) {
 		Point scaledPoint = scale(p);
-		g.fillOval((int) scaledPoint.x, (int) scaledPoint.y, 2, 2);
+		g.fillOval((int) scaledPoint.x, (int) scaledPoint.y, 1, 1);
 	}
 	
 	

@@ -15,7 +15,7 @@ public class MultiOdourSource extends OdourSource {
 		
 		for(OdourSource s : odourSources)
 			{sum += s.getValue(p);}
-			
+		
 		return sum;
 	}
 	

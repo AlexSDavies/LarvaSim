@@ -9,5 +9,5 @@ function data = simDataToStruct(rawData)
     data.dAngle = rawData(:,5);
     data.bearing = rawData(:,6);
 	data.odourVal = rawData(:,7);
-	data.midPos = [rawData(:,8) rawData(:,8)];
+	data.midPos = [rawData(:,8) rawData(:,9)];
 end

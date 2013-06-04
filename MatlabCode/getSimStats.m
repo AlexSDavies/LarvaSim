@@ -1,13 +1,17 @@
-function simData = getSimStats(dataFile,turnsFile,timestep)
+function simData = getSimStats(name,timestep)
 
+dataFile = ['data_' name];
+turnsFile = ['turns_' name];
 
 %% Read data
 
-rawData = dlmread(['../Data/' dataFile], ' ',1,0);
+rawData = dlmread(['../Data/' dataFile], ' ',2,0);
 
 data = simDataToStruct(rawData);
 
 turnIndeces = dlmread(['../Data/' turnsFile],' ',0,0);
+
+
 turnStartIndeces = turnIndeces(:,1);
 turnEndIndeces = turnIndeces(:,2);
 simData.numTurns = length(turnIndeces);
@@ -20,7 +24,7 @@ data.bearing(data.bearing < 0) = data.bearing(data.bearing < 0) + 2*pi;
 turnStartData.bearing(turnStartData.bearing < 0) = turnStartData.bearing(turnStartData.bearing < 0) + 2*pi;
 turnEndData.bearing(turnEndData.bearing < 0) = turnEndData.bearing(turnEndData.bearing < 0) + 2*pi;
 
-simData.rawData = rawData;
+simData.data = data;
 
 %% Get turn info
 
@@ -29,7 +33,7 @@ turnLowHigh = sign(turnEndData.odourVal - turnStartData.odourVal);
 
 % Changes in bearing 
 bearingDiff = turnEndData.bearing - turnStartData.bearing;
-bearingDiff(bearingDiff > pi) = 2*pi - bearingDiff(bearingDiff > pi);
+bearingDiff(bearingDiff > pi) = bearingDiff(bearingDiff > pi) - 2*pi;
 bearingDiff(bearingDiff < -pi) = 2*pi + bearingDiff(bearingDiff < -pi);
 
 % -1 if left, 1 if right
@@ -178,15 +182,26 @@ threeCastCounts(8) = sum(cellfun(@(x) isequal(x,[-1 -1 -1]'),headCasts));
 
 simData.threeCastRatios = threeCastCounts./sum(threeCastCounts);
 
-%% PI Index
-% Assumes 0 centred arena radius 200
-
-simData.midPos = data.midPos;
-size = 200;
-
-leftCount = sum(simData.midPos(:,1)< (0 - size/10));
-rightCount = sum(simData.midPos(:,1)< (0 + size/10));
-
-simData.PI = leftCount/rightCount;
 
 
+
+% Head cast termination angles
+moved = zeros(1,length(data.midPos));
+endOfCast = zeros(1,length(data.midPos));
+for i = 2:length(data.midPos)
+	moved(i) = ((data.midPos(i,1) == data.midPos(i-1,1)) && (data.midPos(i,2) == data.midPos(i-1,2)));
+	if (moved(i)==1 && moved(i-1)==0)
+		endOfCast(i) = 1;
+	end
+end
+
+headAngleTerm = data.headAngle(endOfCast==1);
+bearingCastTerm = data.bearing(endOfCast==1);
+
+headAngleTermLeft = headAngleTerm(bearingCastTerm > pi);
+headAngleTermRight = headAngleTerm(bearingCastTerm < pi);
+
+simData.castTerminationHeadAngle = headAngleTerm;
+
+simData.castTerminationLeft = headAngleTermLeft;
+simData.castTerminationRight = headAngleTermRight;

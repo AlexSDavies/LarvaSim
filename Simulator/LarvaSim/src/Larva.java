@@ -8,42 +8,43 @@ import java.awt.Color;
  * 
  */
 
-public class Larva implements Drawable, Updateable {
+public abstract class Larva implements Drawable, Updateable {
 
 	// Parameters
-	private final double headLength = 10;
-	private final double tailLength = 10;
+	protected final double headLength = 1;
+	protected final double tailLength = 1;
 	
-	private final double forwardSpeed = 10;
+	// Speed in mm/s
+	protected final double forwardSpeed = 1;
 	
-	private final int perceptionHistoryTime = 10;
-	private int perceptionHistoryLength;
+	protected final int perceptionHistoryTime = 10;
+	protected int perceptionHistoryLength;
 	
 	
 	// Fields
-	private LarvaPosition pos;	
+	protected LarvaPosition pos;	
 	
-	private double timestep;
+	protected double timestep;
 	
 	public enum LarvaState {FORWARD,CAST_LEFT,CAST_RIGHT;}
-	private LarvaState state;
+	protected LarvaState state;
 	
-	private double previousOdour;
+	protected double previousOdour;
 
-	private int perceptionPointer;
-	private double[] perceptionHistory;
+	protected int perceptionPointer;
+	protected double[] perceptionHistory;
 	
-	public double[] turnStimulusKernel;
-	private double[] headCastStimulusKernel;
+	protected double[] turnStimulusKernel;
+	protected double[] headCastStimulusKernel;
 
 	
-	private AlgoLarvaParameters params;
+	protected AlgoLarvaParameters params;
 	
-	@SuppressWarnings("unused")
+
 	// This may be used in update step to do variable head cast max ranges
-	private double headCastRange;
+	protected double headCastRange;
 	
-	private Simulation sim;
+	protected Simulation sim;
 	
 	Color col;
 	
@@ -78,72 +79,18 @@ public class Larva implements Drawable, Updateable {
 						
 		// Switch for exciting multicoloured larvae
 		// col = new Color((float) Math.random(), (float) Math.random(), (float) Math.random());
-		col = Color.black;
+		col = Color.BLACK;
 		
 	}
 
 
 	// Update method, called from simulation every step
-	public void update(){
-		
-		boolean moveSuccess;
-		
-		// Do movement	
-		switch(state){
-		
-		case FORWARD:
-			moveSuccess = moveForward(forwardSpeed*timestep);
-			if (Math.random() < getTurnProbability() || !moveSuccess)
-			{
-				if(Math.random() < 0.5)
-					{state = LarvaState.CAST_LEFT;}
-				else
-					{state = LarvaState.CAST_RIGHT;}
-			}
-			headCastRange = sampleHeadCastRange();
-			break;
-		
-		case CAST_LEFT:
-			moveSuccess = turnHead(params.castSpeed*timestep);
-			if (getRelativeHeadAngle() > params.castAngle || !moveSuccess)
-			{
-				state = LarvaState.CAST_RIGHT;
-				headCastRange = sampleHeadCastRange();
-			}
-			if (Math.random() < getHeadCastStopProbability())
-			{
-				state = LarvaState.FORWARD;
-			}
-			
-			break;
-		
-		case CAST_RIGHT:
-			moveSuccess = turnHead(-params.castSpeed*timestep);
-			if (getRelativeHeadAngle() < -params.castAngle || !moveSuccess)
-			{
-				state = LarvaState.CAST_LEFT;
-				headCastRange = sampleHeadCastRange();
-			}
-			if (Math.random() < getHeadCastStopProbability())
-			{
-				state = LarvaState.FORWARD;
-			}
-			
-			break;
-			
-		}
-		
-		// Update perception
-		addPerception(getOdourValueHead());		
-		previousOdour = getOdourValueHead();
-		
-		
-	}
+	public abstract void update();
 
 	
 	// Currently returns a head cast angle uniformly from 0 to params.castAngle
 	// TODO: Consider different distributions
-	private double sampleHeadCastRange() {
+	protected double sampleHeadCastRange() {
 		double range = Math.random() * params.castAngle;
 		return range;
 	}
@@ -192,7 +139,7 @@ public class Larva implements Drawable, Updateable {
 		}
 		
 		// Scale rate
-		rate = params.turnProbBase + Math.max(params.turnProbMult*rate,0);
+		rate = params.turnProbBase + Math.max(params.turnProbMult*rate,0.0);
 		
 		// Calculate turn probability based on rate and timestep
 		double p = timestep*rate;
@@ -215,7 +162,7 @@ public class Larva implements Drawable, Updateable {
 		}
 		
 		// Scale rate
-		rate = params.castProbBase+ Math.max(params.castProbMult*rate,0);
+		rate = params.castProbBase + Math.max(params.castProbMult*rate,0);
 		
 		// Calculate turn probability based on rate and timestep
 		double p = timestep*rate;
@@ -225,12 +172,18 @@ public class Larva implements Drawable, Updateable {
 	}
 	
 
-	private void addPerception(double odourValueHead)
+	protected void addPerception(double odourValueHead)
 	{
 		// Calculate perception: 1/C * dC/dt
 		double C = getOdourValueHead();
 		double deltaC = C - previousOdour;
-		double perception = 1/C * deltaC;
+		double perception;
+		
+		if (C != 0)
+			{perception = 1/C * deltaC;}
+		else
+			{perception = 0;}
+		
 		
 		// Add perception to history
 		// Perception history is kept in a looping array, with perceptionPointer keeping the current value
@@ -241,7 +194,8 @@ public class Larva implements Drawable, Updateable {
 	
 	// As perception history is kept in a looping array, we use this method to return an array
 	// with normal ordering
-	private double[] getPerceptionHistory()
+	// TODO: Check and fix this
+	protected double[] getPerceptionHistory()
 	{
 		double[] outArray = new double[perceptionHistoryLength];
 		int s1 = perceptionPointer+1;
@@ -263,7 +217,7 @@ public class Larva implements Drawable, Updateable {
 
 	// Moves forward by the specified distance
 	// (Tail section follows head)
-	private boolean moveForward(double dist){
+	protected boolean moveForward(double dist){
 		
 		double angle = Geometry.lineAngle(pos.mid, pos.head);
 			
@@ -297,7 +251,7 @@ public class Larva implements Drawable, Updateable {
 	
 	// Turns the head section by the specified angle (radians)
 	// (+ve = CCW, -ve = CW)
-	private boolean turnHead(double angle)
+	protected boolean turnHead(double angle)
 	{
 		
 		double currentAngle = getHeadAngle();
@@ -319,6 +273,13 @@ public class Larva implements Drawable, Updateable {
 		
 	}
 	
+	
+	// TODO: Check if resetting parameters breaks anything
+	public void setParams(Parameters p)
+	{
+		this.params = (AlgoLarvaParameters) p;
+		initialiseKernels();
+	}
 
 	
 	// Draw method, called from Simulation every step
@@ -368,8 +329,10 @@ public class Larva implements Drawable, Updateable {
 		double odourAngle = Math.atan2(deltaYVal, deltaXVal);
 		
 		double headAngle = getBodyAngle() - odourAngle;
-
-		return Geometry.normaliseAngle(headAngle);
+		
+		double returnVal = Geometry.normaliseAngle(headAngle);
+		
+		return returnVal;
 		
 	}
 	
@@ -390,6 +353,9 @@ public class Larva implements Drawable, Updateable {
 	}
 
 	
-	
+	public void setColour(Color c)
+	{
+		this.col = c;
+	}
 	
 }

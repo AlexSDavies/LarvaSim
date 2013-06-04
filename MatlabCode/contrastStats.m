@@ -96,9 +96,16 @@ subplot(3,2,6);
 h = pie(larvaStats.threeCastRatios,metaStats.threeCastLabels);
 
 
+% Num head casts
+figure;
+
+hist(stats.numCasts(stats.numCasts>0));
+
+
+
 % Bearing before turns to low / high
-% 
-% figure;
+
+figure;
 
 subplot(1,2,1); title('Simulation');
 hold on; axis square;

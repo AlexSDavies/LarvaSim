@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -34,9 +33,8 @@ public class SimWindow extends JFrame {
 		setSize(500,500);
 		setLocation(20, 20);
 		
-		simViewer = new SimViewer(drawObjects,-250,250,-250,250);
+		simViewer = new SimViewer(drawObjects,-50,50,-50,50);
 		getContentPane().add(simViewer,BorderLayout.CENTER);
-		simViewer.setPreferredSize(new Dimension(100,100));
 
 		
 	}
