@@ -1,3 +1,5 @@
+
+
 import java.awt.Color;
 
 /*
@@ -26,7 +28,7 @@ public abstract class Larva implements Drawable, Updateable {
 	
 	protected double timestep;
 	
-	public enum LarvaState {FORWARD,CAST_LEFT,CAST_RIGHT;}
+	public enum LarvaState {FORWARD,CAST_LEFT,CAST_RIGHT,CAST_BACK_LEFT,CAST_BACK_RIGHT;}
 	protected LarvaState state;
 	
 	protected double previousOdour;

@@ -1,4 +1,6 @@
 
+
+
 public class CElegans extends Larva {
 
 	public CElegans(Simulation sim, Point startPos, double dir)

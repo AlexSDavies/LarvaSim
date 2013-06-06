@@ -14,34 +14,41 @@ public class SimRunner {
 		
 		// demo.odourtaxis.runSimulation(6000, 1000);
 		
-		demo.pref.runSimulation(6000, 10);
+		// demo.pref.runSimulation(6000, 10);
 		
 		// demo.multiOdourMany.runSimulation(6000, 10);
 		
 		
 		
+		double runTime = 20000;
+		double speedup = 1000;
+				
+		String saveName = "Foo";
+			
+		AlgoLarvaParameters params = new AlgoLarvaParameters();
 		
-//		double runTime = 30000;
-//		double speedup = 100;
-//				
-//		String saveName = "demo";
-//		
-//		Parameters params = new AlgoLarvaParameters();
-//		
-//		// Create the simulation
-//		Simulation sim = new Simulation(params, saveName);
-//
-//		// Add desired objects to simulator
-//		SingleOdourSource od = new SingleOdourSource(new Point(0,0), 10,7,4,12);
-//		sim.addOdour(od);
-//
-//		Larva_NoBackswing l = new Larva_NoBackswing(sim, new Point(35,15),Math.PI/2);
-//		
-//		sim.addLarva(l);
-//		
-//		// Run simulation
-//		sim.runSimulation(runTime,speedup);
-//		
+		
+		// Create the simulation
+		Simulation sim = new Simulation(params, saveName);
+
+		// Add desired objects to simulator
+		WellOdour od = new WellOdour(new Point(-30,-30));
+		sim.addOdour(od);
+
+		Larva l = new Larva_NoBackswing(sim, new Point(-35,-45),Math.PI/2);
+		
+		sim.addLarva(l);
+		
+		PlatOdour od2 = new PlatOdour(new Point(30,30));
+		sim.addOdour(od2);
+
+		Larva l2 = new Larva_NoBackswing(sim, new Point(35,15),Math.PI/2);
+		sim.addLarva(l2);
+		
+		// Run simulation
+		sim.runSimulation(runTime,speedup);
+		
+
 		
 		
 //		DemoSimulations demo = new DemoSimulations();

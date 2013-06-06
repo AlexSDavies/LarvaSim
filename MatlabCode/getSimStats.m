@@ -57,17 +57,33 @@ for i = 1:simData.numTurns
     
     headCastIndeces = getCrossings(preTurnHeadAngles,0.5236);
     
-    headCastVals = preTurnOdourVal(headCastIndeces == 1);
-    
-    % Get perception at zero head angle position, to compare to head cast
-    % values
-    [~, zeroValPos] = min(abs(preTurnHeadAngles));
-    zeroVal = preTurnOdourVal(zeroValPos);
+	%% This version looks at odour values in head cast direction
+	%% deprecated
+%     headCastVals = preTurnOdourVal(headCastIndeces == 1);
+%     
+%     % Get perception at zero head angle position, to compare to head cast
+%     % values
+%     [~, zeroValPos] = min(abs(preTurnHeadAngles));
+%     zeroVal = preTurnOdourVal(zeroValPos);
+% 
+%     
+%     headCastVals(headCastVals < zeroVal) = -1;
+%     headCastVals(headCastVals >= zeroVal) = 1;
 
-    
-    headCastVals(headCastVals < zeroVal) = -1;
-    headCastVals(headCastVals >= zeroVal) = 1;
-
+	headCastDir = +(preTurnHeadAngles(headCastIndeces == 1) > 0);
+	headCastDir(headCastDir == 0) = -1;
+	
+	% Bearing less than 180, so -ve turn is good
+ 	preTurnBearing = data.bearing(endIndex);
+ 	if preTurnBearing < pi && preTurnBearing > 0
+ 		headCastVals = -headCastDir;
+ 	% Bearing greater than 180, so +ve turn is good
+ 	elseif preTurnBearing > pi && preTurnBearing <2*pi
+ 			headCastVals = headCastDir;
+ 	else
+ 		disp('ohgodwhy');
+ 	end
+	
     headCasts{i} = headCastVals;
     
 end

@@ -1,4 +1,6 @@
 
+
+
 public class SmoothConcentrationLarva extends Larva {
 
 	private double maxOdourPref;

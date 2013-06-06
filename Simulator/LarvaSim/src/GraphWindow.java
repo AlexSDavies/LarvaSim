@@ -4,6 +4,7 @@ import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
+
 import info.monitorenter.gui.chart.Chart2D;
 import info.monitorenter.gui.chart.IAxis.AxisTitle;
 import info.monitorenter.gui.chart.traces.Trace2DLtd;

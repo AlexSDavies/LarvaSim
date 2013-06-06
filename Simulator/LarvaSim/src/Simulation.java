@@ -5,10 +5,10 @@ import java.util.List;
 import javax.swing.*;
 
 
+
 // TODO: Quick description of how to create simulation with new setup
 
-// Distances are in 1/10 mm
-// TODO: Change to something more sensible
+// Distances are in mm
 
 // Times are in seconds
 
