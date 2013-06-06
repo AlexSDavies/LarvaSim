@@ -7,9 +7,9 @@ public class OneShotLarva extends Larva {
 	
 	double currentCastAngle;
 	
-	public OneShotLarva(Simulation sim, Point startPos, double dir)
+	public OneShotLarva(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
 	{
-		super(sim, startPos, dir);
+		super(sim, params, startPos, dir);
 		
 		currentCastAngle = getNewCastAngle();
 							

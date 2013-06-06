@@ -6,6 +6,7 @@ import odours.SingleOdourSource;
 import larvae.AlgoLarva;
 import larvae.AlgoLarvaParameters;
 import larvae.Larva;
+import larvae.Larva_NoBackswing;
 
 
 
@@ -47,26 +48,26 @@ public class DemoSimulations
 		
 		odourtaxis = new Simulation(defaultParams, "Foo");
 		odourtaxis.addOdour(defaultOdour);
-		odourtaxis.addLarva(new Point(20,15),Math.PI/2);
+		odourtaxis.addLarva(new Larva_NoBackswing(odourtaxis,defaultParams,new Point(20,15),Math.PI/2));
 		
 		multiOdour = new Simulation(defaultParams, "Foo");
 		multiOdour.addOdour(defaultOdour);
 		multiOdour.addOdour(secondOdour);
-		multiOdour.addLarva(new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
+		multiOdour.addLarva(new Larva_NoBackswing(multiOdour,defaultParams,new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));
 		
 		multiOdourMany = new Simulation(defaultParams, "Foo");
 		multiOdourMany.addOdour(defaultOdour);
 		multiOdourMany.addOdour(secondOdour);
 		for (int i = 0; i < 100; i++)
-			{multiOdourMany.addLarva(new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);}
+			{multiOdourMany.addLarva(new Larva_NoBackswing(multiOdourMany,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));}
 		
 		
 		celegans = new Simulation(defaultParams,"Foo");
 		celegans.addOdour(defaultOdour);
 		for (int i = 0; i < 100; i++)
 		{
-			celegans.addLarva(new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
-			Larva c = new AlgoLarva(celegans, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
+			celegans.addLarva(new Larva_NoBackswing(celegans,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));
+			Larva c = new AlgoLarva(celegans,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
 			c.setParams(celegansParams);
 			c.setColour(Color.WHITE);
 			celegans.addLarva(c);
@@ -75,24 +76,24 @@ public class DemoSimulations
 		regOdour = new Simulation(defaultParams, "Foo");
 		regOdour.addOdour(defaultOdour);
 		for (int i = 0; i < 100; i++)
-			{regOdour.addLarva(new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);}
+			{regOdour.addLarva(new Larva_NoBackswing(regOdour,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));}
 		
 		lowOdour = new Simulation(defaultParams, "Foo");
 		lowOdour.addOdour(lowOdourSource);
 		for (int i = 0; i < 100; i++)
-			{lowOdour.addLarva(new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);}
+			{lowOdour.addLarva(new Larva_NoBackswing(lowOdour,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));}
 		
 		pref = new Simulation(defaultParams, "Foo");
 		pref.addOdour(prefOdourSource);
 		pref.addWall(new Wall(new Point(0,0),20));
 		for (int i = 0; i < 100; i++)
-			{pref.addLarva(new AlgoLarva(pref, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));}
+			{pref.addLarva(new AlgoLarva(pref,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));}
 		
 		cols = new Simulation(defaultParams, "Foo");
 		cols.addOdour(defaultOdour);
 		cols.addWall(new Wall(new Point(0,0),20));
 		for (int i = 0; i < 2000; i++)
-			{Larva l = new AlgoLarva(cols, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
+			{Larva l = new AlgoLarva(cols,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
 			l.setColour(new Color((float) Math.random(), (float) Math.random(), (float) Math.random()));
 			cols.addLarva(l);}
 	}

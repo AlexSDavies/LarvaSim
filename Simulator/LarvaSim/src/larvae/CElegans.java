@@ -7,13 +7,11 @@ import simulation.Simulation;
 
 public class CElegans extends Larva {
 
-	public CElegans(Simulation sim, Point startPos, double dir)
+	public CElegans(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
 	{
-		super(sim, startPos, dir);
+		super(sim,params, startPos, dir);
 		
-		AlgoLarvaParameters params = (AlgoLarvaParameters) sim.getParameters();
-		
-		if (params.castProbBase == 0)
+		if (parameters.castProbBase == 0)
 		{
 			System.out.println("Warning: cast termination base probability should not be zero!");
 			System.exit(1);
@@ -21,6 +19,7 @@ public class CElegans extends Larva {
 		
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void update()
 	{
@@ -43,8 +42,8 @@ public class CElegans extends Larva {
 			break;
 		
 		case CAST_LEFT:
-			moveSuccess = turnHead(params.castSpeed*timestep);
-			if (getRelativeHeadAngle() > params.castAngle || !moveSuccess)
+			moveSuccess = turnHead(parameters.castSpeed*timestep);
+			if (getRelativeHeadAngle() > parameters.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_RIGHT;
 			}
@@ -56,8 +55,8 @@ public class CElegans extends Larva {
 			break;
 		
 		case CAST_RIGHT:
-			moveSuccess = turnHead(-params.castSpeed*timestep);
-			if (getRelativeHeadAngle() < -params.castAngle || !moveSuccess)
+			moveSuccess = turnHead(-parameters.castSpeed*timestep);
+			if (getRelativeHeadAngle() < -parameters.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_LEFT;
 			}
@@ -81,7 +80,7 @@ public class CElegans extends Larva {
 	public double getHeadCastStopProbability() {
 		
 		// Scale rate
-		double rate = params.castProbBase;
+		double rate = parameters.castProbBase;
 		
 		// Calculate turn probability based on rate and timestep
 		double p = timestep*rate;

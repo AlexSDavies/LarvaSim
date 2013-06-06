@@ -7,13 +7,14 @@ import simulation.Simulation;
 
 public class Larva_NoBackswing extends Larva {
 
-	public Larva_NoBackswing(Simulation sim, Point startPos, double dir)
+	public Larva_NoBackswing(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
 	{
-		super(sim, startPos, dir);
+		super(sim, params, startPos, dir);
 	}
 
 
 
+	@SuppressWarnings("incomplete-switch")
 	public void update(){
 		
 		boolean moveSuccess;
@@ -35,8 +36,8 @@ public class Larva_NoBackswing extends Larva {
 			break;
 		
 		case CAST_LEFT:
-			moveSuccess = turnHead(params.castSpeed*timestep);
-			if (getRelativeHeadAngle() > params.castAngle || !moveSuccess)
+			moveSuccess = turnHead(parameters.castSpeed*timestep);
+			if (getRelativeHeadAngle() > parameters.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_RIGHT;
 			}
@@ -48,8 +49,8 @@ public class Larva_NoBackswing extends Larva {
 			break;
 		
 		case CAST_RIGHT:
-			moveSuccess = turnHead(-params.castSpeed*timestep);
-			if (getRelativeHeadAngle() < -params.castAngle || !moveSuccess)
+			moveSuccess = turnHead(-parameters.castSpeed*timestep);
+			if (getRelativeHeadAngle() < -parameters.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_LEFT;
 			}

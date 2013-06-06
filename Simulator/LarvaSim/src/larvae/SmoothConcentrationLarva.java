@@ -10,9 +10,9 @@ public class SmoothConcentrationLarva extends Larva {
 	private double maxOdourPref;
 	private double dislikeSlope;
 
-	public SmoothConcentrationLarva(Simulation sim, Point startPos, double dir)
+	public SmoothConcentrationLarva(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
 	{
-		super(sim, startPos, dir);
+		super(sim, params, startPos, dir);
 		
 		this.maxOdourPref = 0.5;
 		
@@ -21,6 +21,7 @@ public class SmoothConcentrationLarva extends Larva {
 	}
 	
 	
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void update()
 	{
@@ -42,8 +43,8 @@ public class SmoothConcentrationLarva extends Larva {
 			break;
 		
 		case CAST_LEFT:
-			moveSuccess = turnHead(params.castSpeed*timestep);
-			if (getRelativeHeadAngle() > params.castAngle || !moveSuccess)
+			moveSuccess = turnHead(parameters.castSpeed*timestep);
+			if (getRelativeHeadAngle() > parameters.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_RIGHT;
 				headCastRange = sampleHeadCastRange();
@@ -56,8 +57,8 @@ public class SmoothConcentrationLarva extends Larva {
 			break;
 		
 		case CAST_RIGHT:
-			moveSuccess = turnHead(-params.castSpeed*timestep);
-			if (getRelativeHeadAngle() < -params.castAngle || !moveSuccess)
+			moveSuccess = turnHead(-parameters.castSpeed*timestep);
+			if (getRelativeHeadAngle() < -parameters.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_LEFT;
 				headCastRange = sampleHeadCastRange();
@@ -93,10 +94,10 @@ public class SmoothConcentrationLarva extends Larva {
 		rate = rate * (1 - 2*getSigmoidDislike());
 		
 		// Scale rate and get rid of negatives
-		rate = Math.max(params.turnProbMult*rate,0.0);
+		rate = Math.max(parameters.turnProbMult*rate,0.0);
 		
 		// Calculate turn probability based on rate and timestep
-		double p = timestep * (rate + params.turnProbBase);
+		double p = timestep * (rate + parameters.turnProbBase);
 		
 		return p;
 		
@@ -121,16 +122,17 @@ public class SmoothConcentrationLarva extends Larva {
 		
 	
 		// Scale rate and get rid of negatives
-		rate = Math.max(params.castProbMult*rate,0);
+		rate = Math.max(parameters.castProbMult*rate,0);
 		
 		// Calculate turn probability based on rate and timestep
-		double p = timestep * (rate + params.castProbBase);
+		double p = timestep * (rate + parameters.castProbBase);
 		
 		return p;
 		
 	}
 
 	
+	@SuppressWarnings("unused")
 	private double getDislike()
 	{
 		

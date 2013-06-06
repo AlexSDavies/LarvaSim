@@ -21,6 +21,11 @@ import simulation.Wall;
  * 
  */
 
+// TODO: Update this to remove specific reliance on AlgoLarvaParams
+// AlgoLarva specific stuff should be moved to its own class
+// The top-level larva class should only need a generic parameters object
+// This also means moving the perception kernel stuff elsewhere too
+
 public abstract class Larva implements Drawable, Updateable {
 
 	// Parameters
@@ -51,7 +56,7 @@ public abstract class Larva implements Drawable, Updateable {
 	protected double[] headCastStimulusKernel;
 
 	
-	protected AlgoLarvaParameters params;
+	public AlgoLarvaParameters parameters;
 	
 
 	// This may be used in update step to do variable head cast max ranges
@@ -64,7 +69,7 @@ public abstract class Larva implements Drawable, Updateable {
 	
 	// Create larva
 	// Larva must be passed parent simulator to access other objects in simulation
-	public Larva(Simulation sim, Point startPos, double dir)
+	public Larva(Simulation sim, Parameters params, Point startPos, double dir)
 	{
 		
 		this.sim = sim;
@@ -86,7 +91,7 @@ public abstract class Larva implements Drawable, Updateable {
 		
 		previousOdour = getOdourValueHead();
 		
-		params = (AlgoLarvaParameters) sim.getParameters();
+		this.parameters = (AlgoLarvaParameters) params;
 		
 		initialiseKernels();
 						
@@ -104,7 +109,7 @@ public abstract class Larva implements Drawable, Updateable {
 	// Currently returns a head cast angle uniformly from 0 to params.castAngle
 	// TODO: Consider different distributions
 	protected double sampleHeadCastRange() {
-		double range = Math.random() * params.castAngle;
+		double range = Math.random() * parameters.castAngle;
 		return range;
 	}
 
@@ -115,23 +120,23 @@ public abstract class Larva implements Drawable, Updateable {
 		
 		// Turn stimulus kernel
 		turnStimulusKernel = new double[perceptionHistoryLength];
-		int turnKernelLength = (int) (params.turnKernelDuration/timestep);
+		int turnKernelLength = (int) (parameters.turnKernelDuration/timestep);
 		int turnKernelStartPos = perceptionHistoryLength - turnKernelLength;
 		
 		for(int i = turnKernelStartPos; i < perceptionHistoryLength; i++)
 		{
-			turnStimulusKernel[i] = params.turnKernelStartVal + ((params.turnKernelEndVal - params.turnKernelStartVal)/turnKernelLength)*i;
+			turnStimulusKernel[i] = parameters.turnKernelStartVal + ((parameters.turnKernelEndVal - parameters.turnKernelStartVal)/turnKernelLength)*i;
 		}
 		
 		// Head cast stimulus kernel
 		headCastStimulusKernel= new double[perceptionHistoryLength];
 		
-		int castKernelLength = (int) (params.castKernelDuration/timestep);
+		int castKernelLength = (int) (parameters.castKernelDuration/timestep);
 		int castKernelStartPos = perceptionHistoryLength - castKernelLength;
 		
 		for(int i = castKernelStartPos; i < perceptionHistoryLength; i++)
 		{
-			headCastStimulusKernel[i] = params.castKernelStartVal + ((params.castKernelEndVal - params.castKernelStartVal)/castKernelLength)*i;
+			headCastStimulusKernel[i] = parameters.castKernelStartVal + ((parameters.castKernelEndVal - parameters.castKernelStartVal)/castKernelLength)*i;
 		}
 		
 		
@@ -152,7 +157,7 @@ public abstract class Larva implements Drawable, Updateable {
 		}
 		
 		// Scale rate
-		rate = params.turnProbBase + Math.max(params.turnProbMult*rate,0.0);
+		rate = parameters.turnProbBase + Math.max(parameters.turnProbMult*rate,0.0);
 		
 		// Calculate turn probability based on rate and timestep
 		double p = timestep*rate;
@@ -175,7 +180,7 @@ public abstract class Larva implements Drawable, Updateable {
 		}
 		
 		// Scale rate
-		rate = params.castProbBase + Math.max(params.castProbMult*rate,0);
+		rate = parameters.castProbBase + Math.max(parameters.castProbMult*rate,0);
 		
 		// Calculate turn probability based on rate and timestep
 		double p = timestep*rate;
@@ -245,7 +250,7 @@ public abstract class Larva implements Drawable, Updateable {
 			{
 				double wallAngle = Geometry.normaliseAngle(Geometry.lineAngle(pos.mid,pos.head) - Geometry.lineAngle(w.centre,pos.head));
 				double turnDir = Math.signum(wallAngle);
-				turnHead(turnDir*params.castSpeed*timestep);
+				turnHead(turnDir*parameters.castSpeed*timestep);
 				return true;
 			}
 		}
@@ -290,7 +295,7 @@ public abstract class Larva implements Drawable, Updateable {
 	// TODO: Check if resetting parameters breaks anything
 	public void setParams(Parameters p)
 	{
-		this.params = (AlgoLarvaParameters) p;
+		this.parameters = (AlgoLarvaParameters) p;
 		initialiseKernels();
 	}
 

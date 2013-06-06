@@ -9,12 +9,13 @@ import simulation.Simulation;
 public class AlgoLarva extends Larva
 {
 
-	public AlgoLarva(Simulation sim, Point startPos, double dir)
+	public AlgoLarva(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
 	{
-		super(sim, startPos, dir);
+		super(sim,params,startPos, dir);
 	}
 	
 	
+	@SuppressWarnings("incomplete-switch")
 	public void update(){
 		
 		boolean moveSuccess;
@@ -35,8 +36,8 @@ public class AlgoLarva extends Larva
 			break;
 		
 		case CAST_LEFT:
-			moveSuccess = turnHead(params.castSpeed*timestep);
-			if (getRelativeHeadAngle() > params.castAngle || !moveSuccess)
+			moveSuccess = turnHead(parameters.castSpeed*timestep);
+			if (getRelativeHeadAngle() > parameters.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_RIGHT;
 				headCastRange = sampleHeadCastRange();
@@ -49,8 +50,8 @@ public class AlgoLarva extends Larva
 			break;
 		
 		case CAST_RIGHT:
-			moveSuccess = turnHead(-params.castSpeed*timestep);
-			if (getRelativeHeadAngle() < -params.castAngle || !moveSuccess)
+			moveSuccess = turnHead(-parameters.castSpeed*timestep);
+			if (getRelativeHeadAngle() < -parameters.castAngle || !moveSuccess)
 			{
 				state = LarvaState.CAST_LEFT;
 				headCastRange = sampleHeadCastRange();

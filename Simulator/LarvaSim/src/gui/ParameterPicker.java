@@ -1,17 +1,10 @@
 package gui;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.LayoutManager;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-import java.util.ArrayList;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import larvae.AlgoLarvaParameters;
 import larvae.Parameters;
@@ -20,6 +13,7 @@ import larvae.Parameters;
 public class ParameterPicker extends JFrame
 {
 	
+	private static final long serialVersionUID = 1L;
 	Parameters outputParameters;
 	Field[] parameterFields;
 	
