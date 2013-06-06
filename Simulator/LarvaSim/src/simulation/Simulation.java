@@ -16,6 +16,12 @@ import larvae.Larva;
 import larvae.LarvaData;
 import larvae.Parameters;
 
+
+// This class is responsible for running the simulation
+// It keeps track of the other objects, runs the main loop, and initates data processing when everything's finished
+// Note that at the moment only data for a single larva is saved (even if there are lots of larva in one simulation)
+// Might update this in the future (although currently running one larva many times is exactly the same as running many larvae at once)
+
 // Distances are in mm
 // Times are in seconds
 
