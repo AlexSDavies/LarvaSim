@@ -48,16 +48,20 @@ public class LarvaData{
 		midPos = new Point(l.getPos().mid.x,l.getPos().mid.y);
 		tailPos = new Point(l.getPos().tail.x,l.getPos().tail.y);
 		bearing = l.getBearing();
-		perception = l.getPerception();
-		turnProb = l.getTurnProbability();
-		headCastProb = l.getHeadCastStopProbability();
-				
+		
+		// TODO: Figure out how to 'save' these given they might not exist in all larva
+		if (l instanceof KernelLarva)
+		{
+			perception = ((KernelLarva) l).getPerception();
+			turnProb = ((KernelLarva) l).getTurnProbability();
+			headCastProb =((KernelLarva) l).getHeadCastStopProbability();
+		}		
 	}
 	
 	// Headings for output
 	// (Note: these should match representation given by toString!)
 	public static String getOutputHeadings() {
-		String headings = "time perception angle headAngle dAngle bearing odourVal midPosX midPosY";
+		String headings = "time perception angle headAngle dAngle bearing odourVal midPosX midPosY headPosX headPosY tailPosX tailPosY";
 		return headings;
 	}
 	
@@ -74,7 +78,11 @@ public class LarvaData{
 				+ getBearing() + " "
 				+ getOdourValueHead() + " "
 				+ getMidPos().x + " "
-				+ getMidPos().y + " ";
+				+ getMidPos().y + " "
+				+ getHeadPos().x + " "
+				+ getHeadPos().y + " "
+				+ getTailPos().x + " "
+				+ getTailPos().y + " ";
 		
 		return output;
 	}

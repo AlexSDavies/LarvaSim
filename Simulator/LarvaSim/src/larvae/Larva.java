@@ -1,7 +1,5 @@
 package larvae;
 
-
-
 import gui.Drawable;
 import gui.SimViewer;
 
@@ -11,6 +9,7 @@ import simulation.Geometry;
 import simulation.Point;
 import simulation.Simulation;
 import simulation.Updateable;
+import simulation.CircleWall;
 import simulation.Wall;
 
 /*
@@ -21,11 +20,6 @@ import simulation.Wall;
  * 
  */
 
-// TODO: Update this to remove specific reliance on AlgoLarvaParams
-// AlgoLarva specific stuff should be moved to its own class
-// The top-level larva class should only need a generic parameters object
-// This also means moving the perception kernel stuff elsewhere too
-
 public abstract class Larva implements Drawable, Updateable {
 
 	// Parameters
@@ -35,44 +29,26 @@ public abstract class Larva implements Drawable, Updateable {
 	// Speed in mm/s
 	protected final double forwardSpeed = 1;
 	
-	protected final int perceptionHistoryTime = 10;
-	protected int perceptionHistoryLength;
-	
-	
 	// Fields
 	protected LarvaPosition pos;	
 	
 	protected double timestep;
 	
-	public enum LarvaState {FORWARD,CAST_LEFT,CAST_RIGHT,CAST_BACK_LEFT,CAST_BACK_RIGHT;}
-	protected LarvaState state;
-	
-	protected double previousOdour;
-
-	protected int perceptionPointer;
-	protected double[] perceptionHistory;
-	
-	protected double[] turnStimulusKernel;
-	protected double[] headCastStimulusKernel;
-
-	
-	public AlgoLarvaParameters parameters;
-	
-
-	// This may be used in update step to do variable head cast max ranges
-	protected double headCastRange;
-	
 	protected Simulation sim;
+	
+	private Parameters parameters;
 	
 	Color col;
 	
 	
-	// Create larva
-	// Larva must be passed parent simulator to access other objects in simulation
 	public Larva(Simulation sim, Parameters params, Point startPos, double dir)
 	{
 		
-		this.sim = sim;
+		if (sim != null)
+		{
+			this.sim = sim;
+			timestep = sim.timestep;
+		}
 		
 		// Set initial position
 		Point midPos = startPos;
@@ -80,159 +56,31 @@ public abstract class Larva implements Drawable, Updateable {
 		Point tailPos = new Point(midPos.x - headLength*Math.cos(dir), midPos.y - headLength*Math.sin(dir));
 		pos = new LarvaPosition(headPos, midPos, tailPos);
 		
-		// Initialise various things 
-		timestep = sim.timestep;
-		perceptionHistoryLength = (int) (perceptionHistoryTime/timestep);
+		this.setParameters(params);
 		
-		state = LarvaState.FORWARD;
-		
-		perceptionPointer = 0;
-		perceptionHistory = new double[perceptionHistoryLength];
-		
-		previousOdour = getOdourValueHead();
-		
-		this.parameters = (AlgoLarvaParameters) params;
-		
-		initialiseKernels();
-						
-		// Switch for exciting multicoloured larvae
-		// col = new Color((float) Math.random(), (float) Math.random(), (float) Math.random());
 		col = Color.BLACK;
 		
 	}
-
-
+	
+	public void setSim(Simulation sim)
+	{
+		this.sim = sim;
+		timestep = sim.timestep;
+	}
+	
+	// This shouldn't be used apart from in setting up initial position
+	public void setPos(Point startPos, double dir)
+	{
+		Point midPos = startPos;
+		Point headPos = new Point(midPos.x + headLength*Math.cos(dir), midPos.y + headLength*Math.sin(dir));
+		Point tailPos = new Point(midPos.x - headLength*Math.cos(dir), midPos.y - headLength*Math.sin(dir));
+		pos = new LarvaPosition(headPos, midPos, tailPos);
+	}
+	
 	// Update method, called from simulation every step
 	public abstract void update();
 
 	
-	// Currently returns a head cast angle uniformly from 0 to params.castAngle
-	// TODO: Consider different distributions
-	protected double sampleHeadCastRange() {
-		double range = Math.random() * parameters.castAngle;
-		return range;
-	}
-
-	
-	
-	private void initialiseKernels()
-	{
-		
-		// Turn stimulus kernel
-		turnStimulusKernel = new double[perceptionHistoryLength];
-		int turnKernelLength = (int) (parameters.turnKernelDuration/timestep);
-		int turnKernelStartPos = perceptionHistoryLength - turnKernelLength;
-		
-		for(int i = turnKernelStartPos; i < perceptionHistoryLength; i++)
-		{
-			turnStimulusKernel[i] = parameters.turnKernelStartVal + ((parameters.turnKernelEndVal - parameters.turnKernelStartVal)/turnKernelLength)*i;
-		}
-		
-		// Head cast stimulus kernel
-		headCastStimulusKernel= new double[perceptionHistoryLength];
-		
-		int castKernelLength = (int) (parameters.castKernelDuration/timestep);
-		int castKernelStartPos = perceptionHistoryLength - castKernelLength;
-		
-		for(int i = castKernelStartPos; i < perceptionHistoryLength; i++)
-		{
-			headCastStimulusKernel[i] = parameters.castKernelStartVal + ((parameters.castKernelEndVal - parameters.castKernelStartVal)/castKernelLength)*i;
-		}
-		
-		
-	}
-
-	
-	// Returns the probability of initiating a turn based on perception history
-	public double getTurnProbability()
-	{
-		
-		double[] perception = getPerceptionHistory();
-		
-		// Multiply kernel by perception history
-		double rate = 0;
-		for(int i = 0; i < perceptionHistoryLength; i++)
-		{
-			rate += perception[i]*turnStimulusKernel[i];
-		}
-		
-		// Scale rate
-		rate = parameters.turnProbBase + Math.max(parameters.turnProbMult*rate,0.0);
-		
-		// Calculate turn probability based on rate and timestep
-		double p = timestep*rate;
-		
-		return p;
-		
-	}
-	
-	
-	// Returns the probability of stopping head casting
-	public double getHeadCastStopProbability() {
-		
-		double[] perception = getPerceptionHistory();
-		
-		// Multiply kernel by perception history
-		double rate = 0;
-		for(int i = 0; i < perceptionHistoryLength; i++)
-		{
-			rate += perception[i]*headCastStimulusKernel[i];
-		}
-		
-		// Scale rate
-		rate = parameters.castProbBase + Math.max(parameters.castProbMult*rate,0);
-		
-		// Calculate turn probability based on rate and timestep
-		double p = timestep*rate;
-		
-		return p;
-
-	}
-	
-
-	protected void addPerception(double odourValueHead)
-	{
-		// Calculate perception: 1/C * dC/dt
-		double C = getOdourValueHead();
-		double deltaC = C - previousOdour;
-		double perception;
-		
-		if (C != 0)
-			{perception = 1/C * deltaC;}
-		else
-			{perception = 0;}
-		
-		
-		// Add perception to history
-		// Perception history is kept in a looping array, with perceptionPointer keeping the current value
-		perceptionPointer = (perceptionPointer+1) % perceptionHistoryLength;
-		perceptionHistory[perceptionPointer] = perception;
-	}
-
-	
-	// As perception history is kept in a looping array, we use this method to return an array
-	// with normal ordering
-	// TODO: Check and fix this
-	protected double[] getPerceptionHistory()
-	{
-		double[] outArray = new double[perceptionHistoryLength];
-		int s1 = perceptionPointer+1;
-		int l1 = perceptionHistoryLength - s1;
-		int s2 = 0;
-		int l2 = s1;
-		
-		System.arraycopy(perceptionHistory, s1, outArray, 0, l1);
-		System.arraycopy(perceptionHistory, s2, outArray, l1, l2);
-
-		return outArray;
-	}
-
-	
-	public double getPerception()
-	{
-		return perceptionHistory[perceptionPointer];		
-	}
-
 	// Moves forward by the specified distance
 	// (Tail section follows head)
 	protected boolean moveForward(double dist){
@@ -248,10 +96,16 @@ public abstract class Larva implements Drawable, Updateable {
 		{
 			if (w.checkCollision(pos.head,newHeadPoint))
 			{
-				double wallAngle = Geometry.normaliseAngle(Geometry.lineAngle(pos.mid,pos.head) - Geometry.lineAngle(w.centre,pos.head));
-				double turnDir = Math.signum(wallAngle);
-				turnHead(turnDir*parameters.castSpeed*timestep);
-				return true;
+				double turnDir = w.getAwayAngle(pos.mid,pos.head);
+				// TODO: maybe make this not rely on parameters
+				// turnHead(turnDir*getParameters().castSpeed*timestep);
+				double currentAngle = getHeadAngle();
+				double newAngle = currentAngle + turnDir*getParameters().castSpeed*timestep;
+				Point newHeadPoint2 = new Point(pos.mid.x + headLength*Math.cos(newAngle), pos.mid.y + headLength*Math.sin(newAngle));
+				pos.head.x = newHeadPoint2.x;
+				pos.head.y = newHeadPoint2.y;
+				
+				return false;
 			}
 		}
 		
@@ -274,7 +128,7 @@ public abstract class Larva implements Drawable, Updateable {
 		
 		double currentAngle = getHeadAngle();
 		double newAngle = currentAngle + angle;
-				
+		
 		// Check for collision with any walls
 		// If collision would happen, don't move, and return false
 		Point newHeadPoint = new Point(pos.mid.x + headLength*Math.cos(newAngle), pos.mid.y + headLength*Math.sin(newAngle));
@@ -291,14 +145,6 @@ public abstract class Larva implements Drawable, Updateable {
 		
 	}
 	
-	
-	// TODO: Check if resetting parameters breaks anything
-	public void setParams(Parameters p)
-	{
-		this.parameters = (AlgoLarvaParameters) p;
-		initialiseKernels();
-	}
-
 	
 	// Draw method, called from Simulation every step
 	public void draw(SimViewer s)
@@ -375,5 +221,16 @@ public abstract class Larva implements Drawable, Updateable {
 	{
 		this.col = c;
 	}
+
+	public Parameters getParameters() {
+		return parameters;
+	}
+
+	private void setParameters(Parameters parameters) {
+		this.parameters = parameters;
+	}
 	
+	
+	
+
 }

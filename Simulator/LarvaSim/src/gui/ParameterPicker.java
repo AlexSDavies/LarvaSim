@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 
 import javax.swing.*;
 
-import larvae.AlgoLarvaParameters;
+import larvae.KernelLarvaParameters;
 import larvae.Parameters;
 
 
@@ -26,7 +26,7 @@ public class ParameterPicker extends JFrame
 		
 		// Get info about parameters
 		// TODO: Figure out how to specify which kind of parameters we want to create
-		outputParameters = new AlgoLarvaParameters();
+		outputParameters = new KernelLarvaParameters();
 		
 		parameterFields = outputParameters.getClass().getFields();
 		int numParams = parameterFields.length;

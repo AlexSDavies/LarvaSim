@@ -5,14 +5,16 @@ import simulation.Simulation;
 
 
 
-public class Larva_NoBackswing extends Larva {
+public class Larva_NoBackswing extends KernelLarva {
 
-	public Larva_NoBackswing(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
+	private double lastHeadCastTime;
+	
+	
+	public Larva_NoBackswing(Simulation sim, KernelLarvaParameters params, Point startPos, double dir)
 	{
 		super(sim, params, startPos, dir);
+		lastHeadCastTime = 0;
 	}
-
-
 
 	@SuppressWarnings("incomplete-switch")
 	public void update(){
@@ -27,10 +29,10 @@ public class Larva_NoBackswing extends Larva {
 			moveSuccess = moveForward(forwardSpeed*timestep);
 			if (Math.random() < getTurnProbability() || !moveSuccess)
 			{
-				if(Math.random() < 0.5)
-					{state = LarvaState.CAST_LEFT;}
-				else
-					{state = LarvaState.CAST_RIGHT;}
+					if(Math.random() < 0.5)
+						{state = LarvaState.CAST_LEFT;}
+					else
+						{state = LarvaState.CAST_RIGHT;}
 			}
 
 			break;
@@ -44,6 +46,7 @@ public class Larva_NoBackswing extends Larva {
 			if (getRelativeHeadAngle() > Math.PI/4.0 && Math.random() < getHeadCastStopProbability())
 			{
 				state = LarvaState.FORWARD;
+				lastHeadCastTime = sim.getTime();
 			}
 			
 			break;
@@ -57,6 +60,7 @@ public class Larva_NoBackswing extends Larva {
 			if (getRelativeHeadAngle() < -Math.PI/4.0 && Math.random() < getHeadCastStopProbability())
 			{
 				state = LarvaState.FORWARD;
+				lastHeadCastTime = sim.getTime();
 			}
 			
 			break;
@@ -69,6 +73,7 @@ public class Larva_NoBackswing extends Larva {
 		
 		
 	}
-	
+
+
 
 }

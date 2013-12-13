@@ -4,8 +4,9 @@ import java.awt.Color;
 import odours.SingleOdourSource;
 
 import larvae.AlgoLarva;
-import larvae.AlgoLarvaParameters;
-import larvae.Larva;
+import larvae.KernelLarvaParameters;
+import larvae.KernelLarva;
+import larvae.Larva_MinForward;
 import larvae.Larva_NoBackswing;
 
 
@@ -34,8 +35,8 @@ public class DemoSimulations
 	public DemoSimulations()
 	{
 		
-		AlgoLarvaParameters defaultParams = new AlgoLarvaParameters();
-		AlgoLarvaParameters celegansParams = new AlgoLarvaParameters();
+		KernelLarvaParameters defaultParams = new KernelLarvaParameters();
+		KernelLarvaParameters celegansParams = new KernelLarvaParameters();
 		celegansParams.castKernelDuration = 0;
 		celegansParams.castProbBase = 0.2;
 		
@@ -67,8 +68,7 @@ public class DemoSimulations
 		for (int i = 0; i < 100; i++)
 		{
 			celegans.addLarva(new Larva_NoBackswing(celegans,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));
-			Larva c = new AlgoLarva(celegans,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
-			c.setParams(celegansParams);
+			KernelLarva c = new AlgoLarva(celegans,celegansParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
 			c.setColour(Color.WHITE);
 			celegans.addLarva(c);
 		}
@@ -85,15 +85,15 @@ public class DemoSimulations
 		
 		pref = new Simulation(defaultParams, "Foo");
 		pref.addOdour(prefOdourSource);
-		pref.addWall(new Wall(new Point(0,0),20));
+		pref.addWall(new CircleWall(new Point(0,0),20));
 		for (int i = 0; i < 100; i++)
-			{pref.addLarva(new AlgoLarva(pref,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));}
+			{pref.addLarva(new Larva_MinForward(pref,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI));}
 		
 		cols = new Simulation(defaultParams, "Foo");
 		cols.addOdour(defaultOdour);
-		cols.addWall(new Wall(new Point(0,0),20));
+		cols.addWall(new CircleWall(new Point(0,0),20));
 		for (int i = 0; i < 2000; i++)
-			{Larva l = new AlgoLarva(cols,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
+			{KernelLarva l = new AlgoLarva(cols,defaultParams, new Point(0,30*Math.random()-15),2*Math.PI*Math.random()-Math.PI);
 			l.setColour(new Color((float) Math.random(), (float) Math.random(), (float) Math.random()));
 			cols.addLarva(l);}
 	}

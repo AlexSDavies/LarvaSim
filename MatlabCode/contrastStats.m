@@ -98,9 +98,7 @@ h = pie(larvaStats.threeCastRatios,metaStats.threeCastLabels);
 
 % Num head casts
 figure;
-
-hist(stats.numCasts(stats.numCasts>0));
-
+bar(stats.castNumRatio);
 
 
 % Bearing before turns to low / high

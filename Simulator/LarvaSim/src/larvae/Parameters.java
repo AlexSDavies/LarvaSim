@@ -3,6 +3,9 @@ import java.lang.reflect.Field;
 
 public abstract class Parameters {
 
+	// These are fields that all parameters must have
+	// as top level Larva class expects them
+	protected double castSpeed;
 	
 	// Returns a string of line separated parameter names and values
 	// This allows parameters to be e.g. dumped to a file

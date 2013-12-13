@@ -103,7 +103,7 @@ public class GraphWindow extends JFrame {
 		turnProbGraph = new Chart2D();
 		turnProbGraph.setPreferredSize(new Dimension(250, 200));
 		turnProb = new Trace2DLtd(100);
-		turnProb.setName("Turn probability");
+		turnProb.setName("Turn rate");
 		turnProbGraph.addTrace(turnProb);
 		graphList.add(turnProbGraph);
 		
@@ -112,7 +112,7 @@ public class GraphWindow extends JFrame {
 		headCastProbGraph = new Chart2D();
 		headCastProbGraph.setPreferredSize(new Dimension(250, 200));
 		headCastProb = new Trace2DLtd(100);
-		headCastProb.setName("Forward probability");
+		headCastProb.setName("Forward rate");
 		headCastProbGraph.addTrace(headCastProb);
 		graphList.add(headCastProbGraph);
 		

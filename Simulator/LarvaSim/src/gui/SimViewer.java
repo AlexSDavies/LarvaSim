@@ -32,7 +32,7 @@ public class SimViewer extends JPanel
 	Graphics2D g;
 	
 	// SimViewer is given a list of objects to draw
-	// Default arena size = 500x500
+	// Default arena size = 50x50
 	public SimViewer(List <Drawable> drawObjects, int leftX, int rightX, int topY, int botY)
 	{
 		this.drawObjects = drawObjects;

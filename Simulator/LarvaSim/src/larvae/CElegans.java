@@ -5,9 +5,9 @@ import simulation.Simulation;
 
 
 
-public class CElegans extends Larva {
+public class CElegans extends KernelLarva {
 
-	public CElegans(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
+	public CElegans(Simulation sim, KernelLarvaParameters params, Point startPos, double dir)
 	{
 		super(sim,params, startPos, dir);
 		

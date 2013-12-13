@@ -5,11 +5,11 @@ import simulation.Simulation;
 
 
 
-public class ConcentrationLarva extends Larva {
+public class ConcentrationLarva extends KernelLarva {
 
 	private double maxOdourPref;
 
-	public ConcentrationLarva(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
+	public ConcentrationLarva(Simulation sim, KernelLarvaParameters params, Point startPos, double dir)
 	{
 		super(sim, params, startPos, dir);
 		

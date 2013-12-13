@@ -6,10 +6,10 @@ import simulation.Simulation;
 
 
 
-public class AlgoLarva extends Larva
+public class AlgoLarva extends KernelLarva
 {
 
-	public AlgoLarva(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
+	public AlgoLarva(Simulation sim, KernelLarvaParameters params, Point startPos, double dir)
 	{
 		super(sim,params,startPos, dir);
 	}

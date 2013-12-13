@@ -34,7 +34,7 @@ public abstract class OdourSource implements Drawable {
 			for (int iy = 0; iy <= numYDivs; iy++)
 			{
 				double x = (s.getMinX() + ix*divSize);
-				double y = (s.getMinY() + iy*divSize);
+				double y = (s.getMinY() + iy*divSize);				
 				Point p = new Point(x+divSize/2,y+divSize/2);
 				float odourVal = (float) getValue(p);
 				float hueVal = (1-odourVal)*240/360;

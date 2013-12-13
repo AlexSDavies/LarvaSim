@@ -10,4 +10,9 @@ function data = simDataToStruct(rawData)
     data.bearing = rawData(:,6);
 	data.odourVal = rawData(:,7);
 	data.midPos = [rawData(:,8) rawData(:,9)];
+	
+	if(size(rawData,2) > 10)
+		data.headPos = [rawData(:,10) rawData(:,11)];
+		data.tailPos = [rawData(:,12) rawData(:,13)];
+	end
 end

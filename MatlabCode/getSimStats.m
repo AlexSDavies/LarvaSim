@@ -3,17 +3,24 @@ function simData = getSimStats(name,timestep)
 dataFile = ['data_' name];
 turnsFile = ['turns_' name];
 
+meta = getStatMeta();
+
 %% Read data
 
 rawData = dlmread(['../Data/' dataFile], ' ',2,0);
 
 data = simDataToStruct(rawData);
 
-turnIndeces = dlmread(['../Data/' turnsFile],' ',0,0);
+turnIndeces = getTurns(data.headPos,data.midPos,data.tailPos,timestep);
 
+turnStartIndeces = [];
+turnEndIndeces = [];
 
-turnStartIndeces = turnIndeces(:,1);
-turnEndIndeces = turnIndeces(:,2);
+if ~isempty(turnIndeces)
+	turnStartIndeces = turnIndeces(:,1);
+	turnEndIndeces = turnIndeces(:,2);
+end
+
 simData.numTurns = length(turnIndeces);
 
 turnStartData = simDataToStruct(rawData(turnStartIndeces,:));
@@ -26,10 +33,20 @@ turnEndData.bearing(turnEndData.bearing < 0) = turnEndData.bearing(turnEndData.b
 
 simData.data = data;
 
+% n is a count of how many runs this was taken from, so just 1 here
+simData.n = 1;
+
 %% Get turn info
 
 % -1 if turn leads to lower odour, +1 if higher
-turnLowHigh = sign(turnEndData.odourVal - turnStartData.odourVal);
+% turnLowHigh = sign(turnEndData.odourVal - turnStartData.odourVal);
+preTurnBearing = turnStartData.bearing;
+preTurnBearing(preTurnBearing > pi) = pi - preTurnBearing(preTurnBearing > pi);
+postTurnBearing = turnEndData.bearing;
+postTurnBearing(postTurnBearing > pi) = pi - postTurnBearing(postTurnBearing > pi);
+% turnLowHigh = sign(postTurnBearing - preTurnBearing);
+% turnLowHigh(preTurnBearing < 0) = -turnLowHigh(preTurnBearing < 0);
+
 
 % Changes in bearing 
 bearingDiff = turnEndData.bearing - turnStartData.bearing;
@@ -39,16 +56,29 @@ bearingDiff(bearingDiff < -pi) = 2*pi + bearingDiff(bearingDiff < -pi);
 % -1 if left, 1 if right
 turnLeftRight = sign(bearingDiff);
 
+turnLowHigh = turnLeftRight;
+turnLowHigh(preTurnBearing > 0) = -turnLowHigh(preTurnBearing > 0);
 
 
 % List of head casts preceding the turn
 % 1 for cast to higher odour
 % -1 for cast to lower odour
+
+headCasts = {};
+
 for i = 1:simData.numTurns
     
     % Get interval we're looking for head casts over
     endIndex = turnIndeces(i);
     startIndex = endIndex - 5/timestep;
+	
+	if(i > 1)
+		prevTurnEnd = turnEndIndeces(i-1);
+		if prevTurnEnd > startIndex
+			startIndex = prevTurnEnd;
+		end
+	end
+	
     startIndex = max(startIndex,1);
 
     preTurnHeadAngles = data.headAngle(startIndex:endIndex);
@@ -57,19 +87,6 @@ for i = 1:simData.numTurns
     
     headCastIndeces = getCrossings(preTurnHeadAngles,0.5236);
     
-	%% This version looks at odour values in head cast direction
-	%% deprecated
-%     headCastVals = preTurnOdourVal(headCastIndeces == 1);
-%     
-%     % Get perception at zero head angle position, to compare to head cast
-%     % values
-%     [~, zeroValPos] = min(abs(preTurnHeadAngles));
-%     zeroVal = preTurnOdourVal(zeroValPos);
-% 
-%     
-%     headCastVals(headCastVals < zeroVal) = -1;
-%     headCastVals(headCastVals >= zeroVal) = 1;
-
 	headCastDir = +(preTurnHeadAngles(headCastIndeces == 1) > 0);
 	headCastDir(headCastDir == 0) = -1;
 	
@@ -92,11 +109,15 @@ end
 %% Bearing / turn probability
 
 x = 11.25:22.5:168.75;
-numpoints = hist(abs(rad2deg(turnStartData.bearing)),x);
+absBearing = turnStartData.bearing;
+absBearing(absBearing > pi) = 2*pi - absBearing(absBearing > pi);
+numpoints = hist(rad2deg(absBearing),x);
 
-simData.turnCumulativeProb = cumsum(numpoints)/sum(numpoints);
-
-
+if(sum(numpoints) > 0)
+	simData.turnCumulativeProb = cumsum(numpoints)/sum(numpoints);
+else
+	simData.turnCumulativeProb = zeros(size(x));
+end
 
 %% Left / right pre / post turn bearing
 
@@ -104,6 +125,10 @@ circleTics = 0:11.25:348.75;
 
 leftTurnIndeces = find(turnLeftRight == -1);
 rightTurnIndeces = find(turnLeftRight == 1);
+
+%hist(rad2deg(turnStartData.bearing));
+%figure
+%hist(rad2deg(turnEndData.bearing));
 
 simData.bearingBeforeLeftTurns = hist(rad2deg(turnStartData.bearing(leftTurnIndeces)),circleTics);
 simData.bearingAfterLeftTurns = hist(rad2deg(turnEndData.bearing(leftTurnIndeces)),circleTics);
@@ -135,15 +160,18 @@ numIntervals = 12;
 interval = (2*pi)/numIntervals;
 probs = zeros(1,12);
 
+
 for i = 1:numIntervals
     
-    % Changed from -pi + interval*(i-1)
     angle = interval*(i-1);
     
-    totalCount = sum((turnStartData.bearing > angle) & (turnStartData.bearing < angle+interval));
-    leftCount = sum((turnStartData.bearing > angle) & (turnStartData.bearing < angle+interval) & (bearingDiff < 0));
-
-    if (leftCount == 0)
+    totalCount = sum((turnStartData.bearing >= angle) & (turnStartData.bearing < angle+interval));
+    leftCount = sum((turnStartData.bearing >= angle) & (turnStartData.bearing < angle+interval) & (bearingDiff < 0));
+	rightCount = sum((turnStartData.bearing >= angle) & (turnStartData.bearing < angle+interval) & (bearingDiff > 0));
+	
+	% disp([num2str(rad2deg(angle)) '-' num2str(rad2deg(angle+interval)) ': ' num2str(leftCount) ' ' num2str(rightCount)]);
+	
+    if (totalCount == 0)
         probs(i) = NaN;
     else
         probs(i) = leftCount/totalCount;
@@ -159,14 +187,14 @@ simData.leftTurnProb = probs;
 
 %% Head casts
 
-simData.numCasts = cellfun(@length,headCasts);
+numCasts = cellfun(@length,headCasts);
 
 
 castCounts = [];
 
 
-for i = 1:max(simData.numCasts)
-   castCounts(i) = sum(simData.numCasts == i); 
+for i = 1:max(numCasts)
+   castCounts(i) = sum(numCasts == i); 
 end
 
 simData.castNumRatio = castCounts./sum(castCounts);
@@ -199,25 +227,31 @@ threeCastCounts(8) = sum(cellfun(@(x) isequal(x,[-1 -1 -1]'),headCasts));
 simData.threeCastRatios = threeCastCounts./sum(threeCastCounts);
 
 
+%% Distance from 0,0
+distance = sqrt(sum(data.midPos.^2,2));
+distanceHist = hist(distance,meta.distanceTics);
+distanceHist = distanceHist./sum(distanceHist);
 
+simData.distanceHist = distanceHist;
 
-% Head cast termination angles
-moved = zeros(1,length(data.midPos));
-endOfCast = zeros(1,length(data.midPos));
-for i = 2:length(data.midPos)
-	moved(i) = ((data.midPos(i,1) == data.midPos(i-1,1)) && (data.midPos(i,2) == data.midPos(i-1,2)));
-	if (moved(i)==1 && moved(i-1)==0)
-		endOfCast(i) = 1;
-	end
-end
-
-headAngleTerm = data.headAngle(endOfCast==1);
-bearingCastTerm = data.bearing(endOfCast==1);
-
-headAngleTermLeft = headAngleTerm(bearingCastTerm > pi);
-headAngleTermRight = headAngleTerm(bearingCastTerm < pi);
-
-simData.castTerminationHeadAngle = headAngleTerm;
-
-simData.castTerminationLeft = headAngleTermLeft;
-simData.castTerminationRight = headAngleTermRight;
+% 
+% % Head cast termination angles
+% moved = zeros(1,length(data.midPos));
+% endOfCast = zeros(1,length(data.midPos));
+% for i = 2:length(data.midPos)
+% 	moved(i) = ((data.midPos(i,1) == data.midPos(i-1,1)) && (data.midPos(i,2) == data.midPos(i-1,2)));
+% 	if (moved(i)==1 && moved(i-1)==0)
+% 		endOfCast(i) = 1;
+% 	end
+% end
+% 
+% headAngleTerm = data.headAngle(endOfCast==1);
+% bearingCastTerm = data.bearing(endOfCast==1);
+% 
+% headAngleTermLeft = headAngleTerm(bearingCastTerm > pi);
+% headAngleTermRight = headAngleTerm(bearingCastTerm < pi);
+% 
+% simData.castTerminationHeadAngle = headAngleTerm;
+% 
+% simData.castTerminationLeft = headAngleTermLeft;
+% simData.castTerminationRight = headAngleTermRight;

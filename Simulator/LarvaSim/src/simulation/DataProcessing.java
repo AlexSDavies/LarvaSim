@@ -1,6 +1,7 @@
 package simulation;
 
 import gui.SimViewer;
+import gui.SimWindow;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -22,7 +23,7 @@ public class DataProcessing {
 
 	
 	// Runs through all data processing and saves data
-	public static void doAll(List<LarvaData> larvaData, Parameters parameters, SimViewer simViewer, String uniqueName) {
+	public static void doAll(List<LarvaData> larvaData, Parameters parameters, SimWindow simWindow, String uniqueName) {
 		
 		String path = "../../Data/";
 		
@@ -33,19 +34,28 @@ public class DataProcessing {
 		List<int[]> turnPoints = DataProcessing.getTurnPoints(larvaData);
 		
 		// Save turn indices
-		saveTurnTimes(turnPoints,path+"turns_"+uniqueName);
+		// saveTurnTimes(turnPoints,path+"turns_"+uniqueName);
 		
 		// Save Parameters
 		saveParameters(parameters,path+"parameters_"+uniqueName);
 		
 		// Save image of path
-		saveImage(larvaData,simViewer,path+"path_"+uniqueName);
+		if(simWindow != null)
+		{
+		saveImage(larvaData,simWindow.simViewer,path+"path_"+uniqueName);
+		}
 		
 	}
 	
 	
 	// Saves an image of the larva's path over the whole simulation
 	private static void saveImage(List<LarvaData> larvaData, SimViewer simViewer, String saveFile) {
+		
+		// Short pause to make sure Swing is happy
+		try
+			{Thread.sleep((int) 100);}
+		catch (InterruptedException e)
+			{e.printStackTrace();}
 		
 		// Add all points on path to draw
 		for (LarvaData l : larvaData)

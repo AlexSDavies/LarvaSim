@@ -48,6 +48,10 @@ public class Simulation {
 	
 	private List<OdourSource> odourList;
 
+	private boolean showSimulation;
+	
+	double t;
+	private Point boundry;
 	
 	public Simulation(Parameters parameters, String uniqueName)
 	{
@@ -56,6 +60,9 @@ public class Simulation {
 		
 		initObjects();
 		
+		showSimulation = true;
+		
+		boundry = new Point(Double.MAX_VALUE,Double.MAX_VALUE);
 		
 	}
 	
@@ -65,7 +72,10 @@ public class Simulation {
 	public void runSimulation(double runTime, double speedup)
 	{
 				
-		initWindows();
+		if(showSimulation)
+		{
+			initWindows();
+		}
 		
 		// Check we have at least one larva
 		if (larva == null)
@@ -78,15 +88,20 @@ public class Simulation {
 		
 		// -------------- Run simulation -----------------
 		
-		double t = 0;
+		t = 0;
 		
 		// Setup first data point so we can get rates of change in first step 
 		LarvaData prevData = new LarvaData(0,larva); 
 				
-		while(simWindow.isShowing() && t < runTime){
+		while(t < runTime){
+			
+			if (windowClosed())
+				{break;}
+			
 			
 			// Update all objects
-			for (Updateable u : updateObjects){
+			for (Updateable u : updateObjects)
+			{
 				u.update();
 			}
 
@@ -100,18 +115,26 @@ public class Simulation {
 			LarvaData data = new LarvaData((double) t,larva,prevData);
 			larvaData.add(data);
 			prevData = data;
+			
+			// Terminate if boundry reached
+			if (Math.abs(data.getHeadPos().x) > boundry.x || Math.abs(data.getHeadPos().y) > boundry.y)
+				{break;}
 
-			// Update graphs
-			graphWindow.updateGraphs(data);
 			
-			// Update graphics
-			simWindow.simViewer.repaint();
-			
-			// Sleep
-			try {
-				Thread.sleep((int) (timestep*1000/speedup));
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if (showSimulation)
+			{
+				// Update graphs
+				graphWindow.updateGraphs(data);
+				
+				// Update graphics
+				simWindow.simViewer.repaint();
+				
+				// Sleep
+				try {
+					Thread.sleep((int) (timestep*1000/speedup));
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			// Increment time
@@ -123,10 +146,10 @@ public class Simulation {
 		// -------------- Process data -----------------
 		
 		// Don't process data if window closed by user
-		if (simWindow.isShowing())
+		if (!windowClosed())
 		{
 			if (larva != null)
-				{DataProcessing.doAll(larvaData,larva.parameters,simWindow.simViewer,saveName);}
+				{DataProcessing.doAll(larvaData,larva.getParameters(),simWindow,saveName);}
 		}
 		
 		cleanup();
@@ -135,8 +158,12 @@ public class Simulation {
 
 	private void cleanup()
 	{
-		simWindow.dispose();
-		graphWindow.dispose();
+		if(showSimulation)
+		{
+			simWindow.dispose();
+			graphWindow.dispose();
+		}
+		
 	}
 
 	private void initWindows() {
@@ -173,21 +200,21 @@ public class Simulation {
 	}
 
 	
-	public void addLarva(Larva l)
+	public void addLarva(Larva statLarva)
 	{
-		drawObjects.add(l);
-		updateObjects.add(l);
+		drawObjects.add(statLarva);
+		updateObjects.add(statLarva);
 		
 		// If no larva currently tracked, track this one
 		if (larva == null)
-			{setTrackedLarva(l);}
+			{setTrackedLarva(statLarva);}
 	}
 	
 	// Sets which larva we want to track data for
 	// (Defaults to first larva added)
-	public void setTrackedLarva(Larva l)
+	public void setTrackedLarva(Larva statLarva)
 	{
-		this.larva = l;
+		this.larva = statLarva;
 	}
 	
 	public void addOdour(OdourSource odour)
@@ -200,7 +227,7 @@ public class Simulation {
 	{
 		walls.add(wall);
 		drawObjects.add(wall);
-		odour.setDrawRadius(wall.radius);
+		// odour.setDrawRadius(wall.radius);
 	}
 	
 
@@ -227,7 +254,21 @@ public class Simulation {
 		
 	}
 
-
+	public void setShowSimulation(boolean show)
+	{
+		this.showSimulation = show;
+	}
+	
+	// Returns true if the simulation window has been closed by user
+	// (If simulation is being displayed, always returns false  
+	private boolean windowClosed()
+	{
+		if(showSimulation)
+			{return !simWindow.isShowing();}
+		else
+			{return false;}
+	}
+	
 	public OdourSource getOdour()
 	{
 		return odour;
@@ -237,6 +278,17 @@ public class Simulation {
 	public List<Wall> getWalls()
 	{
 		return walls;
+	}
+
+
+	public double getTime() {
+		return t;
+	}
+
+
+	public void setBoundry(double x, double y)
+	{
+		boundry = new Point(x,y);		
 	}
 	
 }

@@ -2,12 +2,12 @@ package larvae;
 import simulation.Point;
 import simulation.Simulation;
 
-public class OneShotLarva extends Larva {
+public class OneShotLarva extends KernelLarva {
 
 	
 	double currentCastAngle;
 	
-	public OneShotLarva(Simulation sim, AlgoLarvaParameters params, Point startPos, double dir)
+	public OneShotLarva(Simulation sim, KernelLarvaParameters params, Point startPos, double dir)
 	{
 		super(sim, params, startPos, dir);
 		
