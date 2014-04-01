@@ -96,6 +96,7 @@ public class DataOdour extends OdourSource {
 	
 		// System.out.println(ind.x + ", " + ind.y);
 		
+		// TODO: adjust for between indices
 		double odourVal;
 				
 		if(ind.x >= 0 && ind.x < odourValues[0].length && ind.y >= 0 && ind.y < odourValues.length)

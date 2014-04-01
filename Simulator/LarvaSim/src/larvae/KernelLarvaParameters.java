@@ -36,7 +36,7 @@ public class KernelLarvaParameters extends Parameters {
 		castKernelEndVal = 1.5;
 		castKernelDuration = 0.5;
 		
-		castProbBase = 0.54/(0.69*0.5);
+		castProbBase = 2;
 		castProbMult = 1;
 		
 		

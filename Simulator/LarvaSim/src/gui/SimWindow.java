@@ -34,7 +34,7 @@ public class SimWindow extends JFrame {
 		setSize(500,500);
 		setLocation(20, 20);
 		
-		simViewer = new SimViewer(drawObjects,-50,50,-50,50);
+		simViewer = new SimViewer(drawObjects,-60,60,-60,60);
 		getContentPane().add(simViewer,BorderLayout.CENTER);
 
 		

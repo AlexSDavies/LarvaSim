@@ -59,7 +59,10 @@ public class DataProcessing {
 		
 		// Add all points on path to draw
 		for (LarvaData l : larvaData)
-			{simViewer.addDrawObject(l.getMidPos());}
+			{
+			simViewer.addDrawObject(l.getTailPos());
+			// simViewer.addDrawObject(l.getHeadPos());
+			}
 		
 		// Copy to buffered image and save
 		BufferedImage bImg = new BufferedImage(simViewer.getWidth(), simViewer.getWidth(), BufferedImage.TYPE_INT_RGB);

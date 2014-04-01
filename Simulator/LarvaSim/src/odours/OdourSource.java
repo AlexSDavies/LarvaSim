@@ -40,7 +40,7 @@ public abstract class OdourSource implements Drawable {
 				float hueVal = (1-odourVal)*240/360;
 				
 				if (p.distance(new Point(0,0)) < radius || radius == 0)
-					{s.setColor(Color.getHSBColor(hueVal, 1, 1));}
+					{s.setColor(Color.getHSBColor(hueVal, 0.7f, 1f));}
 				else
 					{s.setColor(Color.WHITE);}
 				

@@ -215,6 +215,7 @@ simData.twoCastRatios = twoCastCounts./sum(twoCastCounts);
 
 
 % Casts HHH, HLH, LHH, LLH, HHL, HLL, LHL, LLL
+threeCastCounts = zeros(8,1);
 threeCastCounts(1) = sum(cellfun(@(x) isequal(x,[1 1 1]'),headCasts));
 threeCastCounts(2) = sum(cellfun(@(x) isequal(x,[1 -1 1]'),headCasts));
 threeCastCounts(3) = sum(cellfun(@(x) isequal(x,[-1 1 1]'),headCasts));

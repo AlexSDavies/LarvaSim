@@ -6,7 +6,7 @@ function pis = getEndPI(name,nGroups,n)
 	sides = zeros(nGroups*n,1);
 	for i = 1:nGroups*n
 		
-		disp(i);
+		% disp(i);
 		
 		rawData = dlmread(['../Data/data_' name  num2str(i)], ' ',2,0);
 		finalXPos = rawData(end,8);

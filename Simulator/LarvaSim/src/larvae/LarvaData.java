@@ -53,8 +53,8 @@ public class LarvaData{
 		if (l instanceof KernelLarva)
 		{
 			perception = ((KernelLarva) l).getPerception();
-			turnProb = ((KernelLarva) l).getTurnProbability();
-			headCastProb =((KernelLarva) l).getHeadCastStopProbability();
+			turnProb = ((KernelLarva) l).getTurnModifier();
+			headCastProb =((KernelLarva) l).getHeadCastStopModifier();
 		}		
 	}
 	
@@ -82,7 +82,9 @@ public class LarvaData{
 				+ getHeadPos().x + " "
 				+ getHeadPos().y + " "
 				+ getTailPos().x + " "
-				+ getTailPos().y + " ";
+				+ getTailPos().y + " "
+				+ turnProb + " "
+				+ headCastProb + " ";
 		
 		return output;
 	}

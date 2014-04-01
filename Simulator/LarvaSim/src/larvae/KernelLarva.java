@@ -62,7 +62,9 @@ public abstract class KernelLarva extends Larva {
 		
 		this.parameters = (KernelLarvaParameters) params;
 		
-		initialiseKernels();
+		initialiseAllKernels();
+		
+		System.out.print("");
 		
 	}
 
@@ -77,49 +79,62 @@ public abstract class KernelLarva extends Larva {
 
 	
 	
-	private void initialiseKernels()
+	private void initialiseAllKernels()
 	{
 		
-		// Turn stimulus kernel
-		turnStimulusKernel = new double[perceptionHistoryLength];
-		int turnKernelLength = (int) (parameters.turnKernelDuration/timestep);
-		int turnKernelStartPos = perceptionHistoryLength - turnKernelLength;
+		// TODO: remove after checking 
+//		// Turn stimulus kernel
+//		turnStimulusKernel = new double[perceptionHistoryLength];
+//		int turnKernelLength = (int) (parameters.turnKernelDuration/timestep);
+//		int turnKernelStartPos = perceptionHistoryLength - turnKernelLength;
+//		
+//		for(int i = turnKernelStartPos; i < perceptionHistoryLength; i++)
+//		{
+//			turnStimulusKernel[i] = parameters.turnKernelStartVal + ((parameters.turnKernelEndVal - parameters.turnKernelStartVal)/turnKernelLength)*i;
+//		}
+//		
+//		// Head cast stimulus kernel
+//		headCastStimulusKernel= new double[perceptionHistoryLength];
+//		
+//		int castKernelLength = (int) (parameters.castKernelDuration/timestep);
+//		int castKernelStartPos = perceptionHistoryLength - castKernelLength;
+//		
+//		for(int i = castKernelStartPos; i < perceptionHistoryLength; i++)
+//		{
+//			headCastStimulusKernel[i] = parameters.castKernelStartVal + ((parameters.castKernelEndVal - parameters.castKernelStartVal)/castKernelLength)*i;
+//		}
 		
-		for(int i = turnKernelStartPos; i < perceptionHistoryLength; i++)
-		{
-			turnStimulusKernel[i] = parameters.turnKernelStartVal + ((parameters.turnKernelEndVal - parameters.turnKernelStartVal)/turnKernelLength)*i;
-		}
-		
-		// Head cast stimulus kernel
-		headCastStimulusKernel= new double[perceptionHistoryLength];
-		
-		int castKernelLength = (int) (parameters.castKernelDuration/timestep);
-		int castKernelStartPos = perceptionHistoryLength - castKernelLength;
-		
-		for(int i = castKernelStartPos; i < perceptionHistoryLength; i++)
-		{
-			headCastStimulusKernel[i] = parameters.castKernelStartVal + ((parameters.castKernelEndVal - parameters.castKernelStartVal)/castKernelLength)*i;
-		}
-		
+		turnStimulusKernel = initialiseKernel(parameters.turnKernelStartVal,	parameters.turnKernelEndVal, parameters.turnKernelDuration);
+		headCastStimulusKernel = initialiseKernel(parameters.castKernelStartVal,	parameters.castKernelEndVal, parameters.castKernelDuration);
+
 		
 	}
 
+	protected double[] initialiseKernel(double kernelStartVal, double kernelEndVal, double kernelDuration)
+	{
+		
+		double[] kernel = new double[perceptionHistoryLength];
+		int kernelLength = (int) (kernelDuration/timestep);
+		int kernelStartPos =  perceptionHistoryLength - kernelLength;
+		
+		for(int i = kernelStartPos; i < perceptionHistoryLength; i++)
+		{
+			kernel[i] = kernelStartVal + ((kernelEndVal - kernelStartVal)/kernelLength)*i;
+		}
+		
+		return kernel;
+		
+	}
+	
 	
 	// Returns the probability of initiating a turn based on perception history
 	public double getTurnProbability()
 	{
 		
-		double[] perception = getPerceptionHistory();
-		
-		// Multiply kernel by perception history
-		double rate = 0;
-		for(int i = 0; i < perceptionHistoryLength; i++)
-		{
-			rate += perception[i]*turnStimulusKernel[i];
-		}
+		double modifier = convolveWithPerception(turnStimulusKernel); 
 		
 		// Scale rate
-		rate = Math.max(parameters.turnProbBase + parameters.turnProbMult*rate,0);
+		double rate = Math.max(parameters.turnProbBase + parameters.turnProbMult*modifier,0);
 		
 		// Calculate turn probability based on rate and timestep
 		double p = timestep*rate;
@@ -129,26 +144,65 @@ public abstract class KernelLarva extends Larva {
 	}
 	
 	
+//	public double getTurnModifier()
+//	{
+//		
+//		double[] perception = getPerceptionHistory();
+//		
+//		// Multiply kernel by perception history
+//		double modifier = 0;
+//		for(int i = 0; i < perceptionHistoryLength; i++)
+//		{
+//			modifier += perception[i]*turnStimulusKernel[i];
+//		}
+//		
+//		return modifier;
+//		
+//	}
+	
+	
 	// Returns the probability of stopping head casting
 	public double getHeadCastStopProbability() {
 		
-		double[] perception = getPerceptionHistory();
-		
-		// Multiply kernel by perception history
-		double rate = 0;
-		for(int i = 0; i < perceptionHistoryLength; i++)
-		{
-			rate += perception[i]*headCastStimulusKernel[i];
-		}
+		double modifier = convolveWithPerception(headCastStimulusKernel);
 		
 		// Scale rate
-		rate = Math.max(parameters.castProbBase + parameters.castProbMult*rate,0);
+		double rate = Math.max(parameters.castProbBase + parameters.castProbMult*modifier,0);
 		
 		// Calculate turn probability based on rate and timestep
 		double p = timestep*rate;
 		
 		return p;
 
+	}
+	
+	
+	public double getHeadCastStopModifier()
+	{
+		return convolveWithPerception(headCastStimulusKernel);
+	}
+	
+	public double getTurnModifier()
+	{
+		return convolveWithPerception(turnStimulusKernel);
+	}
+	
+	
+	
+	public double convolveWithPerception(double[] kernel)
+	{
+		
+		double[] perception = getPerceptionHistory();
+		
+		double result = 0;
+		for(int i = 0; i < perceptionHistoryLength; i++)
+		{
+			result += perception[i]*kernel[i];
+		}
+		
+		return result;
+		
+		
 	}
 	
 

@@ -1,3 +1,4 @@
+
 function plotStats(stats,directory)
 
 %% 
@@ -138,10 +139,12 @@ set(h(1:2:length(h)),pieProps); set(h(2:2:length(h)),pieTextProps);
 adjustPieText(h);
 
 subplot(3,1,3);
-h = pie(stats.threeCastRatios,metaStats.threeCastLabels);
-set(h(1:2:length(h)),pieProps); set(h(2:2:length(h)),pieTextProps);
-adjustPieText(h);
-
+if (length(stats.threeCastRatios) > 1) % Deal with weird problem when only one of multistats has three casts
+	h = pie(stats.threeCastRatios,metaStats.threeCastLabels);
+	set(h(1:2:length(h)),pieProps); set(h(2:2:length(h)),pieTextProps);
+	adjustPieText(h);
+end
+	
 set(gcf,'Position',[100 100 252 420]);
 
 if (save) saveeps(directory,'HeadCastDirs'); end;

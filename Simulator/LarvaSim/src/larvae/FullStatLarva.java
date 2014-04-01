@@ -11,7 +11,7 @@ public class FullStatLarva extends Larva {
 
 	private LarvaState state;
 	
-	private FullStatLarvaParameters parameters;
+	protected FullStatLarvaParameters parameters;
 	
 	private double currentMaxCastAngle;
 	
@@ -47,7 +47,6 @@ public class FullStatLarva extends Larva {
 			{
 				
 				currentMaxCastAngle = getCastAngle(bearing);
-				//System.out.println(currentMaxCastAngle/Math.PI*180);
 				
 				if(currentMaxCastAngle < 0)
 					{state = LarvaState.CAST_RIGHT;}

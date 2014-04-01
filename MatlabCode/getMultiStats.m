@@ -129,7 +129,6 @@ function [meanStats variances] = getMultiStats(name,n)
 	meanStats.threeCastRatios = mean(threeCastRatios);
 	variances.threeCastRatios = var(threeCastRatios);
 	
-	
 	distanceHist = reshape([multiStats.distanceHist],length(meta.distanceTics),n)';
 	meanStats.distanceHist = mean(distanceHist);
 	variances.distanceHist = var(distanceHist);

@@ -23,8 +23,8 @@ public class Point extends Double implements Drawable {
 	}
 
 	public void draw(SimViewer s) {
-		s.setTransparecy((float) 0.5);
-		s.setColor(Color.GRAY);
+		s.setTransparecy((float) 0.7);
+		s.setColor(Color.BLACK);
 		s.drawPoint(this);
 		s.setTransparecy(1);
 	}

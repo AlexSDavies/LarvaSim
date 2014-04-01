@@ -8,8 +8,8 @@ for i = 1:num
 	
 	%% PI Index
 	
-	leftCount = sum(simData.midPos(:,1) < (0 - 10));
-	rightCount = sum(simData.midPos(:,1) > (0 + 10));
+	leftCount = sum(simData.midPos(1:end,1) < (0 - 10));
+	rightCount = sum(simData.midPos(1:end,1) > (0 + 10));
 
 	PI(i) = (leftCount-rightCount)/length(simData.midPos);
 	

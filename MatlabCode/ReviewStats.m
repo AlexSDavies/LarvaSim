@@ -16,6 +16,11 @@ names = {
 'noCastBiasForward5'
 'noNormalisation'
 
+'StatLarva'
+'StatLarvaNoTurnBias'
+'StatLarvaNoCastBias'
+'StatLarvaNoBias'
+
 };
 
 for i = 1:length(names)
@@ -33,8 +38,8 @@ for i = 1:length(names)
 	
 end
 
-
-larvaStats = getLarvaStats();
-plotStats(larvaStats,'D:\Dropbox\Uni\PhD\ReviewFigures\larva\');
-
-close all;
+ 
+% larvaStats = getLarvaStats();
+% plotStats(larvaStats,'D:\Dropbox\Uni\PhD\ReviewFigures\larva\');
+% 
+% close all;

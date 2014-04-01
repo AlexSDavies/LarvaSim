@@ -23,7 +23,7 @@ function heatmap = positionHeatMap(positions,xLimits,yLimits,divSize)
 	for xI = 1:divNumX
 		for yI = 1:divNumY
 			
-			h = waitbar(((xI*divNumY+yI))/(divNumX*divNumY));
+			% h = waitbar(((xI*divNumY+yI))/(divNumX*divNumY));
 			
 			x = divsX(xI);
 			y = divsY(yI);
@@ -33,7 +33,7 @@ function heatmap = positionHeatMap(positions,xLimits,yLimits,divSize)
 		end
 	end
 	
-	close(h);
+	% close(h);
 
 	% Convert positions to div points
 % 	positions = floor((positions+maxPos)./divSize);

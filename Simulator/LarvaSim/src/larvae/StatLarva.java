@@ -41,7 +41,7 @@ public class StatLarva extends Larva {
 			if (Math.random() < getTurnProbability(bearing) || !moveSuccess)
 			{
 				
-				currentMaxCastAngle = Math.random() * (2*Math.PI/4) + Math.PI/4;
+				currentMaxCastAngle = Math.random() * (Math.PI/2) + Math.PI/6;
 				
 				if(Math.random() > getLeftTurnProb(bearing))
 					{state = LarvaState.CAST_LEFT;}

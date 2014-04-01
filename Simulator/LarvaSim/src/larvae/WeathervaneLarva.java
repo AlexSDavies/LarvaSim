@@ -1,26 +1,30 @@
 package larvae;
+
+
 import simulation.Point;
 import simulation.Simulation;
 
+public class WeathervaneLarva extends Larva_MinForward {
 
-
-
-public class Larva_MinForward extends KernelLarva {
-
-	protected double lastHeadCastTime;
+	private enum wvState{LEFT,RIGHT,PAUSE;}
+	private wvState wvDir, wvNextDir;
+	private double[] wvKernel;
+	private double[] avKernel;
 	
-	protected double minForwardInterval;
-	
-	protected double previousAngle;
-	
-	public Larva_MinForward(Simulation sim, Parameters params, Point startPos, double dir)
+	public WeathervaneLarva(Simulation sim, Parameters params, Point startPos, double dir)
 	{
 		super(sim, params, startPos, dir);
-		lastHeadCastTime = 0;
-		minForwardInterval = ((MinForwardParameters) params).minForwardInterval;
-		previousAngle = getHeadAngle();
+		
+		this.wvDir = wvState.LEFT;
+		
+		WeathervaneParameters p = (WeathervaneParameters) params;
+		
+		wvKernel = initialiseKernel(p.wvKernelStartVal, p.wvKernelEndVal, p.wvKernelDuration);
+		avKernel = initialiseKernel(p.wvKernelStartVal/10, p.wvKernelEndVal/10, p.wvKernelDuration*10);
+		
 	}
 
+	
 	@SuppressWarnings("incomplete-switch")
 	public void update(){
 		
@@ -31,7 +35,15 @@ public class Larva_MinForward extends KernelLarva {
 		switch(state){
 		
 		case FORWARD:
+			
+			if(sim.getTime() - lastHeadCastTime > 2)
+			{
+				weathervane();
+			}
+			
+			
 			moveSuccess = moveForward(forwardSpeed*timestep);
+			
 			if (Math.random() < getTurnProbability() || !moveSuccess)
 			{
 				if(sim.getTime() - lastHeadCastTime > minForwardInterval)
@@ -103,11 +115,59 @@ public class Larva_MinForward extends KernelLarva {
 		
 	}
 
-	
-	public void setMinForwardInterval(double interval)
+
+	private void weathervane()
 	{
-		minForwardInterval = interval;
+		
+		double wvParam = convolveWithPerception(wvKernel);
+		double avParam = convolveWithPerception(avKernel);
+		double turnParam = convolveWithPerception(turnStimulusKernel);
+		
+		double p = (wvParam-avParam)*30*timestep + 0.2;
+		
+		// System.out.printf("%.2f \n%.2f \n%.2f \n\n",wvParam,avParam,wvParam-avParam);
+		// System.out.printf("%.2f \n",p);
+		
+		if (Math.random() < p && wvDir != wvState.PAUSE)
+		{
+			wvNextDir = wvDir;
+			wvDir = wvState.PAUSE;
+		}
+		
+		
+		if(wvDir == wvState.LEFT)
+		{
+			//System.out.printf("Left: %.2f \n",p);
+			turnHead(((WeathervaneParameters) parameters).wvSpeed*timestep);	
+			if (getRelativeHeadAngle() > ((WeathervaneParameters) parameters).wvAngle)
+			{			
+				wvDir = wvState.RIGHT;
+			}
+		}
+		else if(wvDir == wvState.RIGHT)
+		{
+			//System.out.printf("Right: %.2f \n",p);
+			turnHead(-((WeathervaneParameters) parameters).wvSpeed*timestep);
+			if (getRelativeHeadAngle() < -((WeathervaneParameters) parameters).wvAngle)
+			{
+				wvDir = wvState.LEFT;
+			}
+		}
+		else if(wvDir == wvState.PAUSE)
+		{
+			//System.out.println("Pause");
+			if(Math.random() > 0.9)
+			{
+				wvDir = wvNextDir;
+				//System.out.println("UnPause");
+			}
+		}
+		
+		
+		
 	}
 	
-
+	
+	
+	
 }
