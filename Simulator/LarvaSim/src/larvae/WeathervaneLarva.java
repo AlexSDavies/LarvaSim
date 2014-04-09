@@ -121,7 +121,6 @@ public class WeathervaneLarva extends Larva_MinForward {
 		
 		double wvParam = convolveWithPerception(wvKernel);
 		double avParam = convolveWithPerception(avKernel);
-		double turnParam = convolveWithPerception(turnStimulusKernel);
 		
 		double p = (wvParam-avParam)*30*timestep + 0.2;
 		

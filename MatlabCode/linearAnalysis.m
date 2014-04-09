@@ -3,6 +3,9 @@
 xlims = [441 1084];
 ylims = [163 1167];
 
+w = xlims(2) - xlims(1);
+h = ylims(2) - ylims(1);
+
 %%
 
 % expGrad = expGrad(xlims(1):xlims(2),ylims(1):ylims(2));
@@ -58,8 +61,10 @@ for f = 1:3
 	gradient = gradData.gradient_mat;
 
 	allPaths = [];
+	
+	figure;
 
-	for i = 1:90
+	for i = 1:9
 
 		disp(i)
 
@@ -67,39 +72,43 @@ for f = 1:3
 
 		path = data.trimed_vect_out_interpolated_temp(:,1:2);
 
-	% 	figure;
-	% 	
-	% 	imagesc(gradient);
-	% 	alpha(0.7);
-	% 	
-	% 	hold on;
-	% 	plot(path(:,1),path(:,2),'-k','linewidth',2);
-	% 	
-	% 	% print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name int2str(i) '.png'],'-dpng');
-	% 	
-	% 	close(gcf);
+		subplot(3,3,i); hold on;
+		
+		imagesc(gradient(xlims(1):xlims(2),ylims(1):ylims(2)));
+		alpha(0.7);
+		
+		plot(path(:,1)-ylims(1),path(:,2)-xlims(1),'-k','linewidth',2);
+		
+		xlim([0,h]); ylim([0,w]);
+		
+		% print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name int2str(i) '.png'],'-dpng');
+		
+		% close(gcf);
 
-		allPaths = [allPaths; path];
+		% allPaths = [allPaths; path];
 
 	end
 
-	positionHeatMap(allPaths,ylims,xlims,40);
+	print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name '.png'],'-dpng');
+	close(gcf);
 	
-	print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name '_heatmap.png'],'-dpng');
+	% positionHeatMap(allPaths,ylims,xlims,40);
+	
+	% print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name '_heatmap.png'],'-dpng');
 	
 	
 end
 
 %%
 
-names = {'ModelExp' 'ModelLinSteep' 'ModelLinShallow' 'ModelExpWV' 'ModelLinSteepWV' 'ModelLinShallowWV' };
-dataFiles = {'ExpTest' 'LinSteepTest' 'LinShallTest' 'ExpTestWV' 'LinSteepTestWV' 'LinShallTestWV'};
-gradientFiles = {'ExpGrad.mat' 'SteepLinGrad.mat' 'ShallowLinGrad.mat' 'ExpGrad.mat' 'SteepLinGrad.mat' 'ShallowLinGrad.mat'};
+names = {'ModelExp' 'ModelLinSteep' 'ModelLinShallow' 'ModelExpWV' 'ModelLinSteepWV' 'ModelLinShallowWV' 'ModelExpHighKernel' 'ModelLinSteepHighKernel' 'ModelLinShallowHighKernel' 'ModelExpHighKernelWV' 'ModelLinSteepHighKernelWV' 'ModelLinShallowHighKernelWV'};
+dataFiles = {'ExpTest' 'LinSteepTest' 'LinShallTest' 'ExpTestWV' 'LinSteepTestWV' 'LinShallTestWV' 'ExpTestHighKernel' 'LinSteepTestHighKernel' 'LinShallTestHighKernel' 'ExpTestHighKernelWV' 'LinSteepTestHighKernelWV' 'LinShallTestHighKernelWV'};
+gradientFiles = {'ExpGrad.mat' 'SteepLinGrad.mat' 'ShallowLinGrad.mat' 'ExpGrad.mat' 'SteepLinGrad.mat' 'ShallowLinGrad.mat' 'ExpGrad.mat' 'SteepLinGrad.mat' 'ShallowLinGrad.mat' 'ExpGrad.mat' 'SteepLinGrad.mat' 'ShallowLinGrad.mat'};
 
-for f = 1:3
+for f = 1:12
 
-	for t = 1:4
-	
+% 	for t = 1:4
+
 		% * 
 		name = names{f};
 
@@ -112,43 +121,53 @@ for f = 1:3
 
 		allPaths = [];
 
-		for i = 1:90
+		for i = 1:9
 
 			rawData = dlmread(['../Data/data_' dataName int2str(i)], ' ',2,0);
 			data = simDataToStruct(rawData);
 
 			midPos = data.midPos.*10;
-			midPos(:,1) = midPos(:,1) + 163 + 1004/2;
-			midPos(:,2) = midPos(:,2) + 441 + 643/2;
+			midPos(:,1) = midPos(:,1) + 1004/2;
+			midPos(:,2) = midPos(:,2) + 643/2;
 
+			
+			
+			
+			% figure;
+			
+			subplot(3,3,i); hold on;
+			
+			imagesc(gradient(xlims(1):xlims(2),ylims(1):ylims(2)));
+			alpha(0.7);	
+			
+			plot(midPos(:,1),midPos(:,2),'-k','linewidth',2);
+			
+			xlim([0,h]); ylim([0,w]);
+			
+			% print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name int2str(i) '.png'],'-dpng');
+			
+			% close(gcf);
 
-	% 		figure;
-	% 		imagesc(gradient);
-	% 		alpha(0.7);
-	% 		
-	% 		hold on;
-	% 		plot(midPos(:,1),midPos(:,2),'-k','linewidth',2);
-	% 		
-	% 		print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name int2str(i) '.png'],'-dpng');
-	% 		
-	% 		close(gcf);
-
-			l = length(midPos);
-			d = l/4;
-			startT = round((t-1) * d) + 1;
-			endT = round(t*d);
+% 			l = length(midPos);
+% 			d = l/4;
+% 			startT = round((t-1) * d) + 1;
+% 			endT = round(t*d);
 	
-			allPaths = [allPaths; midPos(startT:endT,:)];
+			% allPaths = [allPaths; midPos];
+			% allPaths = [allPaths; midPos(startT:endT,:)];
 
+
+% 		end
+		
+% 		subplot(1,4,t);
+% 		positionHeatMap(allPaths,ylims,xlims,40);
 
 		end
-		
-		subplot(1,4,t);
-		positionHeatMap(allPaths,ylims,xlims,40);
-
-	end
 	
-	print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name '_T' num2str(t) '_heatmap.png'],'-dpng');
+		print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name '.png'],'-dpng');
+		close(gcf);
+	
+% 	print(gcf,['D:\Dropbox\Uni\PhD\LinearPaths\' name '_T' num2str(t) '_heatmap.png'],'-dpng');
 	
 end
 
