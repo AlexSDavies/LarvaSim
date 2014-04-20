@@ -171,85 +171,94 @@ public class SimRunner {
 //		}
 //		
 //		
-		
-//		
-//		String[] odourDataNames = new String[]{"linShallNorm.csv","linSteepNorm.csv","expNorm.csv"};
-//		String[] saveNames = new String[]{"LinShallTest","LinSteepTest","ExpTest"};
-//
-//		for(int f = 0; f < 3; f++)
-//		{
-//			for(int i = 1; i < 10; i++)
-//			{
-//			
-//				System.out.println(i);
-//				
-//				String saveName = saveNames[f] + "HighKernelWV" + Integer.toString(i);
-//		
-//				// MinForwardParameters params = new MinForwardParameters();
-//				WeathervaneParameters params = new WeathervaneParameters();
-//				
-//				params.turnKernelStartVal *= 5;
-//				params.turnKernelEndVal *= 5;
-//				
-//				Simulation sim = new Simulation(params, saveName);
-//				
-//				sim.setShowSimulation(true);
-//		
-//				DataOdour od = new DataOdour("D:/Uni/LarvaSim/Input Data/" + odourDataNames[f]);
-//		
-//				sim.addOdour(od);
-//		
-//				sim.setBoundry(50.2, 32);
-//				
-//				Point startPoint = new Point(-30,0);
-//				double startDir = 0;
-//		
-//				// Larva_MinForward l = new Larva_MinForward(sim, params, startPoint, startDir);
-//				WeathervaneLarva l = new WeathervaneLarva(sim, params, startPoint, startDir);
-//				
-//				sim.addLarva(l);
-//				
-//				double runtime = 600; // seconds
-//				double speedup = 10; // 1 = realtime, 1000 = max
-//		
-//				sim.runSimulation(runtime,speedup);
-//			
-//			}
-//		}
-//		
-		
-		
-		for(int i = 1; i < 101; i++)
-		{
 
-			System.out.println(i);
+		
+		
+		String[] odourDataNames = new String[]{"linShallNorm.csv","linSteepNorm.csv","expNorm.csv","linShallNorm.csv","linSteepNorm.csv","expNorm.csv","linShallNorm.csv","linSteepNorm.csv","expNorm.csv","linShallNorm.csv","linSteepNorm.csv","expNorm.csv"};
+		String[] saveNames = new String[]{"LinShallTest","LinSteepTest","ExpTest","LinShallTestHighKernel","LinSteepTestHighKernel","ExpTestHighKernel","LinShallTestWV","LinSteepTestWV","ExpTestWV","LinShallTestWVHighKernel","LinSteepTestWVHighKernel","ExpTestWVHighKernel"};
+		double[] kernelMult = new double[]{1,1,1,5,5,5,1,1,1,5,5,5};
+		boolean[] wv = new boolean[]{false,false,false,false,false,false,true,true,true,true,true,true};
+		
+		for(int f = 0; f < saveNames.length; f++)
+		{
+			System.out.println(saveNames[f]);
 			
+			for(int i = 1; i < 91; i++)
+			{
 			
-			String saveName = "WeathervaneTest" + Integer.toString(i);
-	
-			WeathervaneParameters params = new WeathervaneParameters();
-	
-			Simulation sim = new Simulation(params, saveName);
-	
-			sim.setShowSimulation(true);
-	
-			SingleOdourSource od = new SingleOdourSource(new Point(0,0), 15,15,15,15);
-	
-			sim.addOdour(od);
-	
-			Point startPoint = new Point(-10,-20);
-			double startDir = Math.random()*2*Math.PI;
-	
-			WeathervaneLarva l = new WeathervaneLarva(sim, params, startPoint, startDir);
-	
-			sim.addLarva(l);
+				// System.out.println(i);
+				
+				String saveName = saveNames[f] + Integer.toString(i);
+		
+				// MinForwardParameters params = new MinForwardParameters();
+				WeathervaneParameters params = new WeathervaneParameters();
+				
+				params.turnKernelStartVal *= kernelMult[f];
+				params.turnKernelEndVal *= kernelMult[f];
+				
+				Simulation sim = new Simulation(params, saveName);
+				
+				sim.setShowSimulation(false);
+		
+				DataOdour od = new DataOdour("D:/Uni/LarvaSim/Input Data/" + odourDataNames[f]);
+		
+				sim.addOdour(od);
+		
+				sim.setBoundry(50.2, 32);
+				
+				Point startPoint = new Point(-30,0);
+				double startDir = 0;
+		
+				Larva l;
+				
+				if(wv[f])
+					{l = new WeathervaneLarva(sim, params, startPoint, startDir);}
+				else
+					{l = new Larva_MinForward(sim, params, startPoint, startDir);}
+				
+				sim.addLarva(l);
+				
+				double runtime = 300; // seconds
+				double speedup = 10; // 1 = realtime, 1000 = max
+		
+				sim.runSimulation(runtime,speedup);
 			
-			double runtime = 600; // seconds
-			double speedup = 1; // 1 = realtime, 1000 = max
-	
-			sim.runSimulation(runtime,speedup);
-			
+			}
 		}
+		
+//		
+//		
+//		for(int i = 1; i < 101; i++)
+//		{
+//
+//			System.out.println(i);
+//			
+//			
+//			String saveName = "WeathervaneTest" + Integer.toString(i);
+//	
+//			WeathervaneParameters params = new WeathervaneParameters();
+//	
+//			Simulation sim = new Simulation(params, saveName);
+//	
+//			sim.setShowSimulation(true);
+//	
+//			SingleOdourSource od = new SingleOdourSource(new Point(0,0), 15,15,15,15);
+//	
+//			sim.addOdour(od);
+//	
+//			Point startPoint = new Point(-10,-20);
+//			double startDir = Math.random()*2*Math.PI;
+//	
+//			WeathervaneLarva l = new WeathervaneLarva(sim, params, startPoint, startDir);
+//	
+//			sim.addLarva(l);
+//			
+//			double runtime = 600; // seconds
+//			double speedup = 1; // 1 = realtime, 1000 = max
+//	
+//			sim.runSimulation(runtime,speedup);
+//			
+//		}
 		
 		
 		

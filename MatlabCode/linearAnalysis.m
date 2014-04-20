@@ -171,3 +171,72 @@ for f = 1:12
 	
 end
 
+
+
+
+%% Bearings
+
+% Larva
+
+for f = 1:3
+
+	
+	averageAngle = [];
+	
+	for i = 1:90
+
+		data = load([dataPath folders{f} '\xys_' int2str(i) '.mat'],'trimed_vect_out_interpolated_temp');
+
+		path = data.trimed_vect_out_interpolated_temp(:,1:2);
+
+		averageAngle(i) = mean(cos(getPathAngles(path)));
+		
+		% pathLength = sum(sqrt(sum((path(2:end,:) - path(1:end-1,:)).^2,2)));
+		% vector(i,:) = sum(path(2:end,:) - path(1:end-1,:))./pathLength;
+		
+		
+	end
+
+	% averageVector(f,:) = mean(vector);
+	
+	subplot(5,3,f);
+	
+	boxplot(averageAngle);
+
+	ylim([-1.0,1.0]); hold on; plot(xlim,[0 0],'--k');
+
+	averageAnglesLarva{f} = averageAngle;
+	
+end
+
+
+% figure; hold on;
+% for i = 1:3
+% plot([0,averageVector(:,1)],[0,averageVector(:,2)]);
+%e nd
+
+%%  Model
+
+for f = 1:12
+
+	averageAngle = [];
+	
+	for i = 1:90
+
+		rawData = dlmread(['../Data/data_' dataFiles{f} int2str(i)], ' ',2,0);
+		data = simDataToStruct(rawData);
+		
+		averageAngle(i) = mean(cos(getPathAngles(data.midPos)));
+		
+	end
+
+	subplot(5,3,f+3);
+
+	boxplot(averageAngle);
+
+	ylim([-1.0,1.0]); hold on; plot(xlim,[0 0],'--k');
+
+	averageAnglesModel{f} = averageAngle;
+	
+end
+

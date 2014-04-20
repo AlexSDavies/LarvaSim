@@ -2,12 +2,8 @@ function normAngle = normaliseAngle(angle)
 
 	angle = mod(angle,2*pi);
 		
-	if (angle > pi)
-		angle = -pi + mod(angle,pi);
-	end
+	angle(angle > pi) = -pi + mod(angle(angle > pi),pi);
 	
-	if (angle < -pi)
-		angle = pi + mod(angle,pi);
-	end
+	angle(angle < -pi) = pi - mod(abs(angle(angle < -pi)),pi);
 		
 	normAngle = angle;
