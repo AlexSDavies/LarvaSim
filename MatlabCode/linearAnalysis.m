@@ -8,9 +8,9 @@ h = ylims(2) - ylims(1);
 
 %%
 
-% expGrad = expGrad(xlims(1):xlims(2),ylims(1):ylims(2));
-% shallLinGrad = shallLinGrad(xlims(1):xlims(2),ylims(1):ylims(2));
-% steepLinGrad = steepLinGrad(xlims(1):xlims(2),ylims(1):ylims(2));
+expGrad = expGrad(xlims(1):xlims(2),ylims(1):ylims(2));
+shallLinGrad = shallLinGrad(xlims(1):xlims(2),ylims(1):ylims(2));
+steepLinGrad = steepLinGrad(xlims(1):xlims(2),ylims(1):ylims(2));
 
 %%
 

@@ -102,8 +102,65 @@ for i = 1:simData.numTurns
  	end
 	
     headCasts{i} = headCastVals;
-    
+	
 end
+
+
+%% Evren head cast groups
+
+headCastTimes = abs(data.headAngle) > deg2rad(30);
+headCastDiff = diff([headCastTimes; 0]);
+headCastStartInd = find(headCastDiff == 1) + 1;
+headCastEndInd = find(headCastDiff == -1);
+
+preHCGbearing = [];
+postHCGbearing = [];
+
+if ~isempty(headCastStartInd)
+	 
+	% Find HCGs
+	j = 1;
+	headCastGroup{j} = [1];
+
+	for i = 2:length(headCastStartInd)
+		% If not moved since last head cast
+		if norm(data.midPos(headCastStartInd(i-1),:) - data.midPos(headCastStartInd(i),:)) < 2
+			headCastGroup{j} = [headCastGroup{j} i];
+		else
+			j = j+1;
+			headCastGroup{j} = [i];
+		end
+
+	end
+
+	% Get start and end time of HCGs
+	hcgStarts = [];
+	hcgEnds = [];
+	for i = 1:length(headCastGroup)
+		startInd = headCastGroup{i}(1);
+		hcgStarts = [hcgStarts headCastStartInd(startInd)];
+		endInd = headCastGroup{i}(end);
+		hcgEnds = [hcgEnds headCastEndInd(endInd)];
+	end
+
+	for i = 1:length(headCastGroup)
+
+		%TODO: Angular mean
+		startInd = max(hcgStarts(i)-6/timestep,1);
+		preHeadCastBearings = data.bearing(startInd:hcgStarts(i));
+		preHCGbearing = [preHCGbearing angularMean(preHeadCastBearings)];
+
+		endInd = min(hcgEnds(i)+6/timestep,length(data.bearing));
+		postHeadCastBearings = data.bearing(hcgEnds(i):endInd);
+		postHCGbearing = [postHCGbearing angularMean(postHeadCastBearings)];
+
+	end
+
+end
+
+simData.preHCGbearing = normaliseAngle(preHCGbearing);
+simData.postHCGangleChange = normaliseAngle(postHCGbearing - preHCGbearing);
+
 
 
 %% Bearing / turn probability
@@ -125,10 +182,6 @@ circleTics = 0:11.25:348.75;
 
 leftTurnIndeces = find(turnLeftRight == -1);
 rightTurnIndeces = find(turnLeftRight == 1);
-
-%hist(rad2deg(turnStartData.bearing));
-%figure
-%hist(rad2deg(turnEndData.bearing));
 
 simData.bearingBeforeLeftTurns = hist(rad2deg(turnStartData.bearing(leftTurnIndeces)),circleTics);
 simData.bearingAfterLeftTurns = hist(rad2deg(turnEndData.bearing(leftTurnIndeces)),circleTics);
@@ -234,6 +287,39 @@ distanceHist = hist(distance,meta.distanceTics);
 distanceHist = distanceHist./sum(distanceHist);
 
 simData.distanceHist = distanceHist;
+
+
+
+%% Weathervane
+
+allReorientation = (data.angle(2:end) - data.angle(1:end-1))./0.1;
+
+runIndeces = find(abs(allReorientation) < deg2rad(15));
+
+runBearing = data.bearing(runIndeces);
+runReorientation = allReorientation(runIndeces);
+
+% runBearingsLarva(runBearingsLarva > pi) = -2*pi + runBearingsLarva(runBearingsLarva > pi);
+runBearing = normaliseAngle(runBearing);
+
+a = [-180:10:170];
+
+for i = 1:length(a)
+	
+	ang = a(i);
+	
+	ind = find(runBearing > deg2rad(ang) & runBearing < deg2rad(ang+10));
+	
+	reorientationAtBearing(i) = rad2deg(mean(runReorientation(ind)));
+	
+end
+
+simData.reorientationAtBearing = reorientationAtBearing;
+
+% simData.runBearing = runBearing;
+% simData.runReorientation = runReorientation;
+
+
 
 % 
 % % Head cast termination angles

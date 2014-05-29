@@ -173,60 +173,80 @@ public class SimRunner {
 //		
 
 		
-		
-		String[] odourDataNames = new String[]{"linShallNorm.csv","linSteepNorm.csv","expNorm.csv","linShallNorm.csv","linSteepNorm.csv","expNorm.csv","linShallNorm.csv","linSteepNorm.csv","expNorm.csv","linShallNorm.csv","linSteepNorm.csv","expNorm.csv"};
-		String[] saveNames = new String[]{"LinShallTest","LinSteepTest","ExpTest","LinShallTestHighKernel","LinSteepTestHighKernel","ExpTestHighKernel","LinShallTestWV","LinSteepTestWV","ExpTestWV","LinShallTestWVHighKernel","LinSteepTestWVHighKernel","ExpTestWVHighKernel"};
-		double[] kernelMult = new double[]{1,1,1,5,5,5,1,1,1,5,5,5};
-		boolean[] wv = new boolean[]{false,false,false,false,false,false,true,true,true,true,true,true};
-		
-		for(int f = 0; f < saveNames.length; f++)
-		{
-			System.out.println(saveNames[f]);
-			
-			for(int i = 1; i < 91; i++)
-			{
-			
-				// System.out.println(i);
-				
-				String saveName = saveNames[f] + Integer.toString(i);
-		
-				// MinForwardParameters params = new MinForwardParameters();
-				WeathervaneParameters params = new WeathervaneParameters();
-				
-				params.turnKernelStartVal *= kernelMult[f];
-				params.turnKernelEndVal *= kernelMult[f];
-				
-				Simulation sim = new Simulation(params, saveName);
-				
-				sim.setShowSimulation(false);
-		
-				DataOdour od = new DataOdour("D:/Uni/LarvaSim/Input Data/" + odourDataNames[f]);
-		
-				sim.addOdour(od);
-		
-				sim.setBoundry(50.2, 32);
-				
-				Point startPoint = new Point(-30,0);
-				double startDir = 0;
-		
-				Larva l;
-				
-				if(wv[f])
-					{l = new WeathervaneLarva(sim, params, startPoint, startDir);}
-				else
-					{l = new Larva_MinForward(sim, params, startPoint, startDir);}
-				
-				sim.addLarva(l);
-				
-				double runtime = 300; // seconds
-				double speedup = 10; // 1 = realtime, 1000 = max
-		
-				sim.runSimulation(runtime,speedup);
-			
-			}
-		}
-		
 //		
+//		String[] odourDataNames = new String[]{
+//				"linShallNorm.csv","linSteepNorm.csv","expNorm.csv",
+//				"linShallNorm.csv","linSteepNorm.csv","expNorm.csv",
+//				"linShallNorm.csv","linSteepNorm.csv","expNorm.csv",
+//				"linShallNorm.csv","linSteepNorm.csv","expNorm.csv",
+//				"linShallNorm.csv","linSteepNorm.csv","expNorm.csv",
+//				"linShallNorm.csv","linSteepNorm.csv","expNorm.csv"
+//				};
+//		
+//		String[] saveNames = new String[]{
+//				"LinShallTest","LinSteepTest","ExpTest",
+//				"LinShallTestHighKernel","LinSteepTestHighKernel","ExpTestHighKernel",
+//				"LinShallTestWV","LinSteepTestWV","ExpTestWV",
+//				"LinShallTestWVHighKernel","LinSteepTestWVHighKernel","ExpTestWVHighKernel",
+//				"LinShallTestNN","LinSteepTestNN","ExpTestNN",
+//				"LinShallTestNNHighKernel","LinSteepTestNNHighKernel","ExpTestNNHighKernel"
+//			};
+//		double[] kernelMult = new double[]{1,1,1,5,5,5,1,1,1,5,5,5,1,1,1,5,5,5};
+//		int[] larvaType = new int[]{1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3};
+//		
+//		
+//		for(int f = 0; f < 18; f++)
+//		{
+//			System.out.println(saveNames[f]);
+//			
+//			for(int i = 1; i < 91; i++)
+//			{
+//			
+//				// System.out.println(i);
+//				
+//				String saveName = saveNames[f] + Integer.toString(i);
+//		
+//				// MinForwardParameters params = new MinForwardParameters();
+//				WeathervaneParameters params = new WeathervaneParameters();
+//				
+//				params.turnKernelStartVal *= kernelMult[f];
+//				params.turnKernelEndVal *= kernelMult[f];
+//				
+//				Simulation sim = new Simulation(params, saveName);
+//				
+//				sim.setShowSimulation(false);
+//		
+//				DataOdour od = new DataOdour("D:/Uni/LarvaSim/Input Data/" + odourDataNames[f]);
+//		
+//				sim.addOdour(od);
+//		
+//				sim.setBoundry(50.2, 32);
+//				
+//				Point startPoint = new Point(-30,0);
+//				double startDir = 0;
+//		
+//				Larva l = null;
+//				
+//				if(larvaType[f] == 1)
+//					{l = new WeathervaneLarva(sim, params, startPoint, startDir);}
+//				else if(larvaType[f] == 2)
+//					{l = new Larva_MinForward(sim, params, startPoint, startDir);}
+//				else if(larvaType[f] == 3)
+//					{l = new Larva_NoNormalisation(sim, params, startPoint, startDir);}
+//				
+//				sim.addLarva(l);
+//				
+//				double runtime = 300; // seconds
+//				double speedup = 10; // 1 = realtime, 1000 = max
+//		
+//				sim.runSimulation(runtime,speedup);
+//			
+//			}
+//		}
+//		
+
+		
+		
 //		
 //		for(int i = 1; i < 101; i++)
 //		{
@@ -260,7 +280,41 @@ public class SimRunner {
 //			
 //		}
 		
-		
+		for (int i = 1; i <= 100; i++)
+		{
+			System.out.println(i);
+			
+			// String to use for simulation output
+			// (Files get saved to the 'Data' folder)
+			String saveName = "Checkerboard" + Integer.toString(i);
+	
+			// Create default parameters for larva
+			WeathervaneParameters params = new WeathervaneParameters();
+	
+			// Create the simulation
+			Simulation sim = new Simulation(params, saveName);
+	
+			sim.setShowSimulation(false);
+	
+			CheckerboardOdour od = new CheckerboardOdour();
+	
+			sim.addOdour(od);
+	
+			Point startPoint = new Point(Math.random()*20-10,Math.random()*20-10);
+			double startDir = Math.random()*Math.PI*2;
+	
+	
+			WeathervaneLarva l = new WeathervaneLarva(sim, params, startPoint, startDir);
+	
+			sim.addLarva(l);
+			
+			// Set runtime and speedup
+			double runtime = 180; // seconds
+			double speedup = 1000; // 1 = realtime, 1000 = max
+	
+			// Run simulation
+			sim.runSimulation(runtime,speedup);
+		}
 		
 		
 		

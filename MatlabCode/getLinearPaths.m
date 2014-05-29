@@ -1,4 +1,4 @@
-function paths = getLinearPaths
+function paths = getLinearPaths(modelDataFiles);
 
 xlims = [441 1084];
 ylims = [163 1167];
@@ -32,20 +32,28 @@ end
 
 modelDataPath = '../Data/data_';
 
-modelDataFiles = {
-	'ExpTest'
-	'LinSteepTest'
-	'LinShallTest'
-	'ExpTestWV'
-	'LinSteepTestWV'
-	'LinShallTestWV'
-	'ExpTestHighKernel'
-	'LinSteepTestHighKernel'
-	'LinShallTestHighKernel'
-	'ExpTestHighKernelWV'
-	'LinSteepTestHighKernelWV'
-	'LinShallTestHighKernelWV'
-	};
+% modelDataFiles = {
+% 	'ExpTest'
+% 	'LinSteepTest'
+% 	'LinShallTest'
+% 	'ExpTestWV'
+% 	'LinSteepTestWV'
+% 	'LinShallTestWV'
+% 	'ExpTestHighKernel'
+% 	'LinSteepTestHighKernel'
+% 	'LinShallTestHighKernel'
+% 	'ExpTestHighKernelWV'
+% 	'LinSteepTestHighKernelWV'
+% 	'LinShallTestHighKernelWV'
+% 	'ExpTestNN'
+% 	'LinSteepTestNN'
+% 	'LinShallTestNN'
+% 	'ExpTestNNHighKernel'
+% 	'LinSteepTestNNHighKernel'
+% 	'LinShallTestNNHighKernel'
+% 	};
+
+
 
 for f = 1:length(modelDataFiles)
 	disp(f);

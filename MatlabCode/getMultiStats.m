@@ -33,7 +33,6 @@ function [meanStats variances] = getMultiStats(name,n)
 	meanStats.samplePaths = samplePaths;
 	
 	
-	
 % 	hist(meanDist,[0:20:160]);
 % 	xlabel('Mean distance from source (mm)');
 % 	ylabel('Num of larvae');
@@ -44,6 +43,7 @@ function [meanStats variances] = getMultiStats(name,n)
 	meanStats.data.midPos = [];
 	for i = 1:n
 		meanStats.data.midPos = [meanStats.data.midPos; multiStats(i).data.midPos];
+		meanStats.data.paths{i} = multiStats(i).data.midPos;
 	end
 	
 	meanStats.n = n;
@@ -57,6 +57,8 @@ function [meanStats variances] = getMultiStats(name,n)
 	for i = 1:length(data)
 		runTimes(i) = data(i).time(end);
 	end
+	
+	%% Mean / variance of stats 
 	
 	meanStats.runTimes = mean(runTimes);
 	variances.runTimes = var(runTimes);
@@ -93,14 +95,21 @@ function [meanStats variances] = getMultiStats(name,n)
 	meanStats.bearingBeforeTurnsToHigh = mean(bearingBeforeTurnsToHigh);
 	variances.bearningBeforeTurnsToHigh = var(bearingBeforeTurnsToHigh);
 	
+	
+	reorientationAtBearing = reshape([multiStats.reorientationAtBearing],36,n)';
+	meanStats.reorientationAtBearing = nanmean(reorientationAtBearing);
+	variances.reorientationAtBearing = nanvar(reorientationAtBearing);
+	
+	
 	% Remove NaNs to calculate mean
 	leftTurnProb = reshape([multiStats.leftTurnProb],12,n)';
-	leftTurnProbNoNans = leftTurnProb;
+	% leftTurnProbNoNans = leftTurnProb;
 	% leftTurnProbNoNans(isnan(leftTurnProbNoNans)) = 0;
 	% meanStats.leftTurnProb = nanmean(leftTurnProbNoNans);
 	% variances.leftTurnProb = var(leftTurnProbNoNans);
 	meanStats.leftTurnProb = nanmean(leftTurnProb);
 	variances.leftTurnProb = nanvar(leftTurnProb);
+	
 	
 	
 	%% Num cast ratios
@@ -135,6 +144,18 @@ function [meanStats variances] = getMultiStats(name,n)
 	
 	
 	meanStats.variances = variances;
+		
 	
-	%% TODO - cast termination stuff
+	%% HCG stuff
+	
+	meanStats.data.preHCGbearing = [];
+	meanStats.data.postHCGangleChange = [];
+	for i = 1:n
+		meanStats.data.preHCGbearing = [meanStats.data.preHCGbearing multiStats(i).preHCGbearing];
+		meanStats.data.postHCGangleChange = [meanStats.data.postHCGangleChange multiStats(i).postHCGangleChange];	
+	end
+	
+	
+	%% 
+	
 	

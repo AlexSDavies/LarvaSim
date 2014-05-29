@@ -23,6 +23,12 @@ pieTextProps = struct(				...
 	'FontSize', 7					...
 	);
 
+lineProps = struct(				...							
+	'LineWidth', 2,				...
+	'Marker', 'x'			...
+	);
+
+
 %%
 
 meta = getStatMeta();
@@ -160,6 +166,22 @@ xlabel('Number of casts'); ylabel('Proportion of turns');
 if (save) saveeps(directory,'NumCasts'); end;
 
 
+
+%% Weathervaning
+
+f = figure(); hold on;
+h = plot(-175:10:175,stats.reorientationAtBearing);
+set(h,lineProps);
+
+plot([-180 180],[0 0],'--k');
+plot([0 0],[-3 3],'--k');
+xlim([-180 180]); ylim([-3 3]);
+
+xlabel('Bearing (degrees)');
+ylabel('Reorientation (degrees / s)');
+
+if (save) saveeps(directory,'Weathvaning'); end;
+
 %%
 
 if isfield(stats,'distanceHist')
@@ -187,7 +209,15 @@ positionHeatMap(stats.data.midPos,[-32.25,32.25],[-50.65,50.65],2);
 
 if (save) saveeps(directory,'Heatmap'); end;
 
+
+f = figure;
+heatmapWithPaths(stats.data.paths,[-32.25,32.25],[-50.65,50.65],3);
+
+if (save) saveeps(directory,'HeatmapPaths'); end;
+
+
 end
+
 
 
 %%
@@ -216,6 +246,5 @@ if isfield(stats,'samplePaths')
 	end
 	
 end
-
 
 

@@ -1,0 +1,2 @@
+function hcgStats = getHeadCastGroupStats(stats)
+

@@ -13,6 +13,7 @@ public class RunAllSims {
 		String name;
 		Parameters params;
 		
+
 //		// Basic larva
 //		name = "basicModel";
 //		params = new MinForwardParameters();
@@ -133,6 +134,70 @@ public class RunAllSims {
 //		runStandardSim("larvae.StatLarva", params, name);
 //		
 		
+	
+		// Weathervane versions
+		
+		// Weathervane larva
+//		name = "cast_turn_wv";
+//		params = new WeathervaneParameters();
+//		runStandardSim("larvae.WeathervaneLarva", params, name);
+//		
+//		name = "cast_turn";
+//		params = new WeathervaneParameters();
+//		((WeathervaneParameters) params).wvKernelStartVal = 0;
+//		((WeathervaneParameters) params).wvKernelEndVal = 0;
+//		runStandardSim("larvae.WeathervaneLarva", params, name);
+//		
+//		name = "cast_wv";
+//		params = new WeathervaneParameters();
+//		((KernelLarvaParameters) params).turnKernelStartVal = 0;
+//		((KernelLarvaParameters) params).turnKernelEndVal = 0;
+//		runStandardSim("larvae.WeathervaneLarva", params, name);
+//		
+//		name = "turn_wv";
+//		params = new WeathervaneParameters();
+//		((KernelLarvaParameters) params).castKernelStartVal = 0;
+//		((KernelLarvaParameters) params).castKernelEndVal = 0;
+//		runStandardSim("larvae.WeathervaneLarva", params, name);
+//		
+//		name = "cast";
+//		params = new WeathervaneParameters();
+//		((WeathervaneParameters) params).wvKernelStartVal = 0;
+//		((WeathervaneParameters) params).wvKernelEndVal = 0;
+//		((KernelLarvaParameters) params).turnKernelStartVal = 0;
+//		((KernelLarvaParameters) params).turnKernelEndVal = 0;
+//		runStandardSim("larvae.WeathervaneLarva", params, name);
+//		
+//		name = "turn";
+//		params = new WeathervaneParameters();
+//		((WeathervaneParameters) params).wvKernelStartVal = 0;
+//		((WeathervaneParameters) params).wvKernelEndVal = 0;
+//		((KernelLarvaParameters) params).castKernelStartVal = 0;
+//		((KernelLarvaParameters) params).castKernelEndVal = 0;
+//		runStandardSim("larvae.WeathervaneLarva", params, name);
+//		
+//		name = "wv";
+//		params = new WeathervaneParameters();
+//		((KernelLarvaParameters) params).castKernelStartVal = 0;
+//		((KernelLarvaParameters) params).castKernelEndVal = 0;
+//		((KernelLarvaParameters) params).turnKernelStartVal = 0;
+//		((KernelLarvaParameters) params).turnKernelEndVal = 0;
+//		runStandardSim("larvae.WeathervaneLarva", params, name);
+//		
+//		name = "random";
+//		params = new WeathervaneParameters();
+//		((KernelLarvaParameters) params).castKernelStartVal = 0;
+//		((KernelLarvaParameters) params).castKernelEndVal = 0;
+//		((KernelLarvaParameters) params).turnKernelStartVal = 0;
+//		((KernelLarvaParameters) params).turnKernelEndVal = 0;
+//		((WeathervaneParameters) params).wvKernelStartVal = 0;
+//		((WeathervaneParameters) params).wvKernelEndVal = 0;
+//		runStandardSim("larvae.WeathervaneLarva", params, name);
+
+		
+		name = "cast_turn_wv";
+		params = new WeathervaneParameters();
+		runLinearSims("larvae.WeathervaneLarva", params, name);
 		
 	}
 
@@ -140,7 +205,7 @@ public class RunAllSims {
 	private static void runStandardSim(String className, Parameters params, String name)
 	{
 		
-		for (int rep = 1; rep <= 50; rep++)
+		for (int rep = 1; rep <= 500; rep++)
 		{
 		
 			System.out.println(name + ": " + rep);
@@ -180,8 +245,9 @@ public class RunAllSims {
 			sim.addLarva(l);
 			
 			// Set runtime and speedup
-			double runtime = 600; // seconds
+			double runtime = 300; // seconds
 			double speedup = 1; // 1 = realtime, 1000 = max
+			sim.setShowSimulation(false);
 			
 			// Run simulation
 			sim.runSimulation(runtime,speedup);
@@ -189,6 +255,72 @@ public class RunAllSims {
 		}
 		
 		
+	}
+	
+	
+	private static void runLinearSims(String className, Parameters params, String name)
+	{
+		
+		String[] odourDataNames = new String[]{
+				"linShallNorm.csv","linSteepNorm.csv","expNorm.csv"
+		};
+		
+		String[] odourSaveNames = new String[]{
+			"_shallow", "_steep", "_exp"
+		};
+		
+		for (int rep = 1; rep <= 500; rep++)
+		{
+		
+			for(int o = 0; o < 3; o++)
+			{
+			
+				System.out.println(name + ": " + rep);
+				
+				// String to use for simulation output
+				// (Files get saved to the 'Data' folder)
+				String saveName = name + odourSaveNames[o] + Integer.toString(rep);
+				
+				// Create the simulation
+				Simulation sim = new Simulation(params, saveName);
+		
+				sim.setShowSimulation(true);
+				
+				DataOdour od = new DataOdour("D:/Uni/LarvaSim/Input Data/" + odourDataNames[o]);
+				sim.addOdour(od);
+				
+				sim.setBoundry(50.2, 32);
+				
+				Point startPoint = new Point(-30,0);
+				double startDir = 0;
+				
+				
+				Larva l = null;
+				try {
+					Class larvaClass = Class.forName(className);
+					Class[] types = {Simulation.class, Parameters.class, Point.class, Double.TYPE};
+					Constructor larvaConstructor;
+					larvaConstructor = larvaClass.getConstructor(types);
+					l = (Larva) larvaConstructor.newInstance(sim,params,startPoint,startDir); 
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+				
+				sim.addLarva(l);
+				
+				// Set runtime and speedup
+				double runtime = 300; // seconds
+				double speedup = 1; // 1 = realtime, 1000 = max
+				sim.setShowSimulation(false);
+				
+				// Run simulation
+				sim.runSimulation(runtime,speedup);
+
+			}
+		}
+	
 	}
 	
 	

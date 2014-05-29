@@ -7,7 +7,7 @@ function heatmap = positionHeatMap(positions,xLimits,yLimits,divSize)
 % 		positions = [positions; stats.data.midPos];
 % 	end
 
-	f = gcf;
+
 
 	xRange = xLimits(2) - xLimits(1);
 	yRange = yLimits(2) - yLimits(1);
@@ -18,44 +18,26 @@ function heatmap = positionHeatMap(positions,xLimits,yLimits,divSize)
 	divNumX = length(divsX);
 	divNumY = length(divsY);
 	
-	heatmap = zeros(divNumX,divNumY);
+	edges{1} = divsX;
+	edges{2} = divsY;
 	
-	for xI = 1:divNumX
-		for yI = 1:divNumY
-			
-			% h = waitbar(((xI*divNumY+yI))/(divNumX*divNumY));
-			
-			x = divsX(xI);
-			y = divsY(yI);
-			
-			heatmap(xI,yI) = sum(positions(:,1) >= x & positions(:,1) < x+divSize & positions(:,2) >= y & positions(:,2) < y+divSize);
-			
-		end
-	end
-	
-	% close(h);
 
-	% Convert positions to div points
-% 	positions = floor((positions+maxPos)./divSize);
-% 	positions(positions == divNum) = divNum-1;
-% 
-% 	n = length(positions);
-% 	
-% 	for i = 1:length(positions)
-% 		waitbar(i/n);
-% 		x = positions(i,1)+1;
-% 		y = positions(i,2)+1;
-% 		heatmap(x,y) = heatmap(x,y)+1;
-% 	end
+	
+	heatmap = hist3(positions,'edges',edges);
+
 
 	heatmap = heatmap./length(positions);
 	
 	
-	m = colormap('hot');
+	m = flipud(colormap('gray'));
 	maxVal = max(max(heatmap));
 	numCols = length(m);
+	
+	
 	% imagesc(heatmap);
 	
+	% Draw this manually as need to keep scale correct for 
+	% overlaying paths
 	for x = 1:divNumX
 		for y = 1:divNumY
 						
@@ -71,12 +53,9 @@ function heatmap = positionHeatMap(positions,xLimits,yLimits,divSize)
 		end
 	end
 	
-	divNumX*divNumY
-	
 	
 	% set(gca,'CLim',[0 maxVal])
 	% cb = colorbar();
 	
-	
 	axis off;
-	axis equal;
+	% axis equal;
